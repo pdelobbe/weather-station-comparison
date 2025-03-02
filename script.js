@@ -1,19 +1,20 @@
-// Station slugs (unique identifiers for weather stations)
+// Station slugs
 const stations = {
     "Philippe": "216ccd7e9663b597d059694c2b68cd60",
     "Ken": "e0e95053fed772de0e60444fc4ff88c8",
     "Brian": "fbbe2845876465d1a954e5e49d757bfa"
 };
 
-// Weather components (data types to display)
+// Weather components with keys and units
 const components = [
     { name: "Temperature", key: "tempf", unit: "°F", decimals: 1 },
     { name: "Wind Speed", key: "windspeedmph", unit: "mph", decimals: 1 },
+    { name: "Wind Gust", key: "windgustmph", unit: "mph", decimals: 1 },
     { name: "Rain", key: "hourlyrainin", unit: "in/hr", decimals: 2 },
     { name: "Pressure", key: "baromrelin", unit: "inHg", decimals: 2 }
 ];
 
-// Fetch weather data from the Ambient Weather API
+// Fetch weather data from Ambient Weather API
 async function fetchWeatherData(slug) {
     const url = `https://lightning.ambientweather.net/devices?public.slug=${slug}`;
     try {
@@ -26,7 +27,7 @@ async function fetchWeatherData(slug) {
     }
 }
 
-// Determine the leaderboard leader (handles ties)
+// Determine leaderboard leader with tie handling
 function getLeader(stationValues, isMin, unit, decimals) {
     if (stationValues.length === 0) return "No data";
     const sorted = isMin
@@ -65,7 +66,6 @@ async function updateUI() {
                     }
                 });
 
-                // Update wind direction arrow if present
                 if (stationData.winddir !== undefined) {
                     const arrow = document.getElementById(`arrow-${stationLower}`);
                     if (arrow) {
@@ -76,7 +76,7 @@ async function updateUI() {
                 }
             }
         }
-    }, 100); // 100ms delay for DOM readiness
+    }, 100);
 
     // Update Leaderboard Panel
     components.forEach(comp => {

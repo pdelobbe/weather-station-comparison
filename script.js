@@ -35,7 +35,9 @@ function getLeader(stationValues, isMin, unit, decimals) {
         : stationValues.sort((a, b) => b.value - a.value);
     const topValue = sorted[0].value;
     const topStations = sorted.filter((s) => s.value === topValue);
-    if (topStations.length === 3) return "3-way tie";
+    if (topStations.length === 3) {
+        return `3-way tie (${topValue.toFixed(decimals)}${unit})`; // Updated to show value
+    }
     if (topStations.length === 2) {
         return `${topStations[0].station} & ${topStations[1].station} (${topValue.toFixed(decimals)}${unit})`;
     }

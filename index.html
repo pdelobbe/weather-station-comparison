@@ -9,11 +9,15 @@
 <body>
     <div class="main-container">
         <h1>Weather Station Comparison</h1>
+        
+        <!-- Current Data Panel -->
         <div class="comparison">
             <div class="station" id="station-philippe">
                 <h2>Philippe</h2>
                 <p>Temp: <span id="philippe-temp">--</span>°F</p>
                 <p>Wind Speed: <span id="philippe-wind">--</span> mph</p>
+                <p>Rain: <span id="philippe-rain">--</span> in/hr</p>
+                <p>Pressure: <span id="philippe-pressure">--</span> inHg</p>
                 <svg width="100" height="100" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" stroke="black" stroke-width="1" fill="none"/>
                     <g id="arrow-philippe">
@@ -21,11 +25,12 @@
                     </g>
                 </svg>
             </div>
-            <!-- Repeat for Ken and Brian -->
             <div class="station" id="station-ken">
                 <h2>Ken</h2>
                 <p>Temp: <span id="ken-temp">--</span>°F</p>
                 <p>Wind Speed: <span id="ken-wind">--</span> mph</p>
+                <p>Rain: <span id="ken-rain">--</span> in/hr</p>
+                <p>Pressure: <span id="ken-pressure">--</span> inHg</p>
                 <svg width="100" height="100" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" stroke="black" stroke-width="1" fill="none"/>
                     <g id="arrow-ken">
@@ -37,6 +42,8 @@
                 <h2>Brian</h2>
                 <p>Temp: <span id="brian-temp">--</span>°F</p>
                 <p>Wind Speed: <span id="brian-wind">--</span> mph</p>
+                <p>Rain: <span id="brian-rain">--</span> in/hr</p>
+                <p>Pressure: <span id="brian-pressure">--</span> inHg</p>
                 <svg width="100" height="100" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" stroke="black" stroke-width="1" fill="none"/>
                     <g id="arrow-brian">
@@ -45,14 +52,28 @@
                 </svg>
             </div>
         </div>
+        
+        <!-- Leaderboard Panel -->
         <div class="leaderboard">
             <h2>Max Leaders</h2>
-            <div id="max-leaders">--</div>
+            <p>Temperature: <span id="max-tempf-leader">--</span></p>
+            <p>Wind Speed: <span id="max-windspeedmph-leader">--</span></p>
+            <p>Rain: <span id="max-hourlyrainin-leader">--</span></p>
+            <p>Pressure: <span id="max-baromrelin-leader">--</span></p>
+            
             <h2>Min Leaders</h2>
-            <div id="min-leaders">--</div>
+            <p>Temperature: <span id="min-tempf-leader">--</span></p>
+            <p>Wind Speed: <span id="min-windspeedmph-leader">--</span></p>
+            <p>Rain: <span id="min-hourlyrainin-leader">--</span></p>
+            <p>Pressure: <span id="min-baromrelin-leader">--</span></p>
+            
             <h2>Current Leaders</h2>
-            <div id="current-leaders">--</div>
+            <p>Temperature: <span id="current-tempf-leader">--</span></p>
+            <p>Wind Speed: <span id="current-windspeedmph-leader">--</span></p>
+            <p>Rain: <span id="current-hourlyrainin-leader">--</span></p>
+            <p>Pressure: <span id="current-baromrelin-leader">--</span></p>
         </div>
+        
         <p id="last-updated">Last Updated: --</p>
     </div>
     <script src="script.js"></script>

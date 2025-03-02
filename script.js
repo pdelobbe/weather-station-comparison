@@ -51,6 +51,25 @@ async function updateUI() {
         data[station] = await fetchWeatherData(stations[station]);
     }
 
+    // Update individual station data
+    for (const station in data) {
+        const stationData = data[station];
+        if (stationData) {
+            const stationLower = station.toLowerCase();
+            document.getElementById(`${stationLower}-temp`).innerText = stationData.tempf ? stationData.tempf.toFixed(1) : "--";
+            document.getElementById(`${stationLower}-wind`).innerText = stationData.windspeedmph ? stationData.windspeedmph.toFixed(1) : "--";
+            document.getElementById(`${stationLower}-rain`).innerText = stationData.hourlyrainin ? stationData.hourlyrainin.toFixed(2) : "--";
+            document.getElementById(`${stationLower}-pressure`).innerText = stationData.baromrelin ? stationData.baromrelin.toFixed(2) : "--";
+            // Update wind direction arrow if available
+            if (stationData.winddir !== undefined) {
+                const arrow = document.getElementById(`arrow-${stationLower}`);
+                if (arrow) {
+                    arrow.setAttribute("transform", `rotate(${stationData.winddir}, 50, 50)`);
+                }
+            }
+        }
+    }
+
     // Update Leaderboard Panel
     for (const comp of components) {
         const minValues = [];

@@ -45,7 +45,7 @@ function getLeader(stationValues, isMin, unit) {
 
 // Update the UI with fetched data
 async function updateUI() {
-    console.log("Updating UI..."); // Debug log to confirm function runs
+    console.log("Updating UI..."); // Debug log
     const data = {};
     for (const station in stations) {
         data[station] = await fetchWeatherData(stations[station]);
@@ -56,10 +56,11 @@ async function updateUI() {
         const stationData = data[station];
         if (stationData) {
             const stationLower = station.toLowerCase();
-            document.getElementById(`${stationLower}-temp`).innerText = stationData.tempf ? stationData.tempf.toFixed(1) : "--";
-            document.getElementById(`${stationLower}-wind`).innerText = stationData.windspeedmph ? stationData.windspeedmph.toFixed(1) : "--";
-            document.getElementById(`${stationLower}-rain`).innerText = stationData.hourlyrainin ? stationData.hourlyrainin.toFixed(2) : "--";
-            document.getElementById(`${stationLower}-pressure`).innerText = stationData.baromrelin ? stationData.baromrelin.toFixed(2) : "--";
+            // Use !== undefined to handle 0 correctly
+            document.getElementById(`${stationLower}-temp`).innerText = stationData.tempf !== undefined ? stationData.tempf.toFixed(1) : "--";
+            document.getElementById(`${stationLower}-wind`).innerText = stationData.windspeedmph !== undefined ? stationData.windspeedmph.toFixed(1) : "--";
+            document.getElementById(`${stationLower}-rain`).innerText = stationData.hourlyrainin !== undefined ? stationData.hourlyrainin.toFixed(2) : "--";
+            document.getElementById(`${stationLower}-pressure`).innerText = stationData.baromrelin !== undefined ? stationData.baromrelin.toFixed(2) : "--";
             // Update wind direction arrow if available
             if (stationData.winddir !== undefined) {
                 const arrow = document.getElementById(`arrow-${stationLower}`);
@@ -79,33 +80,24 @@ async function updateUI() {
         for (const station in data) {
             const stationData = data[station];
             if (stationData) {
-                // Check for current value
                 const currentValue = stationData[comp.key];
                 if (currentValue !== undefined) {
                     currentValues.push({ station, value: currentValue });
                 }
-
-                // Check for min and max values in hl
                 const hlData = stationData.hl;
                 if (hlData && hlData[comp.key]) {
                     const minValue = hlData[comp.key].l;
                     const maxValue = hlData[comp.key].h;
-                    if (minValue !== undefined) {
-                        minValues.push({ station, value: minValue });
-                    }
-                    if (maxValue !== undefined) {
-                        maxValues.push({ station, value: maxValue });
-                    }
+                    if (minValue !== undefined) minValues.push({ station, value: minValue });
+                    if (maxValue !== undefined) maxValues.push({ station, value: maxValue });
                 }
             }
         }
 
-        // Determine leaders
         const minLeader = minValues.length > 0 ? getLeader(minValues, true, comp.unit) : "N/A";
         const currentLeader = currentValues.length > 0 ? getLeader(currentValues, false, comp.unit) : "N/A";
         const maxLeader = maxValues.length > 0 ? getLeader(maxValues, false, comp.unit) : "N/A";
 
-        // Update leaderboard elements
         const minElement = document.getElementById(`min-${comp.key}-leader`);
         const currentElement = document.getElementById(`current-${comp.key}-leader`);
         const maxElement = document.getElementById(`max-${comp.key}-leader`);

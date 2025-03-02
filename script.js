@@ -7,10 +7,10 @@ const stations = {
 
 // Weather components with keys and units
 const components = [
-    { name: "Temperature", key: "tempf", unit: "°F" },
-    { name: "Wind Speed", key: "windspeedmph", unit: "mph" },
-    { name: "Rain", key: "hourlyrainin", unit: "in/hr" },
-    { name: "Pressure", key: "baromrelin", unit: "inHg" }
+    { name: "Temperature", key: "tempf", unit: "°F", decimals: 1 },
+    { name: "Wind Speed", key: "windspeedmph", unit: "mph", decimals: 1 },
+    { name: "Rain", key: "hourlyrainin", unit: "in/hr", decimals: 2 },
+    { name: "Pressure", key: "baromrelin", unit: "inHg", decimals: 2 }
 ];
 
 // Fetch weather data from Ambient Weather API
@@ -21,26 +21,24 @@ async function fetchWeatherData(slug) {
         const data = await response.json();
         return data.data[0].lastData;
     } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data for slug", slug, ":", error);
         return null;
     }
 }
 
 // Determine leaderboard leader with tie handling
-function getLeader(stationValues, isMin, unit) {
+function getLeader(stationValues, isMin, unit, decimals) {
     if (stationValues.length === 0) return "No data";
     const sorted = isMin
         ? stationValues.sort((a, b) => a.value - b.value)
         : stationValues.sort((a, b) => b.value - a.value);
     const topValue = sorted[0].value;
     const topStations = sorted.filter((s) => s.value === topValue);
-    if (topStations.length === 3) {
-        return "3-way tie";
-    } else if (topStations.length === 2) {
-        return `${topStations[0].station} & ${topStations[1].station} (${topValue.toFixed(1)}${unit})`;
-    } else {
-        return `${sorted[0].station} (${topValue.toFixed(1)}${unit})`;
+    if (topStations.length === 3) return "3-way tie";
+    if (topStations.length === 2) {
+        return `${topStations[0].station} & ${topStations[1].station} (${topValue.toFixed(decimals)}${unit})`;
     }
+    return `${sorted[0].station} (${topValue.toFixed(decimals)}${unit})`;
 }
 
 // Update the UI with fetched data
@@ -50,45 +48,33 @@ async function updateUI() {
         data[station] = await fetchWeatherData(stations[station]);
     }
 
-    // Update individual station data with a slight delay to ensure DOM is ready
-    setTimeout(() => {
-        for (const station in data) {
-            const stationData = data[station];
-            if (stationData) {
-                const stationLower = station.toLowerCase();
-
-                const tempElement = document.getElementById(`${stationLower}-temp`);
-                if (tempElement) {
-                    tempElement.innerText = stationData.tempf !== undefined ? stationData.tempf.toFixed(1) : "--";
+    // Update individual station data and leaderboard
+    for (const station in data) {
+        const stationData = data[station];
+        if (stationData) {
+            const stationLower = station.toLowerCase();
+            // Update individual station elements
+            components.forEach(comp => {
+                const elementId = `${stationLower}-${comp.key}`;
+                const element = document.getElementById(elementId);
+                if (element) {
+                    const value = stationData[comp.key];
+                    element.textContent = value !== undefined ? value.toFixed(comp.decimals) : "--";
                 }
+            });
 
-                const windElement = document.getElementById(`${stationLower}-wind`);
-                if (windElement) {
-                    windElement.innerText = stationData.windspeedmph !== undefined ? stationData.windspeedmph.toFixed(1) : "--";
-                }
-
-                const rainElement = document.getElementById(`${stationLower}-rain`);
-                if (rainElement) {
-                    rainElement.innerText = stationData.hourlyrainin !== undefined ? stationData.hourlyrainin.toFixed(2) : "--";
-                }
-
-                const pressureElement = document.getElementById(`${stationLower}-pressure`);
-                if (pressureElement) {
-                    pressureElement.innerText = stationData.baromrelin !== undefined ? stationData.baromrelin.toFixed(2) : "--";
-                }
-
-                if (stationData.winddir !== undefined) {
-                    const arrow = document.getElementById(`arrow-${stationLower}`);
-                    if (arrow) {
-                        arrow.setAttribute("transform", `rotate(${stationData.winddir}, 50, 50)`);
-                    }
+            // Update wind direction arrow
+            if (stationData.winddir !== undefined) {
+                const arrow = document.getElementById(`arrow-${stationLower}`);
+                if (arrow) {
+                    arrow.setAttribute("transform", `rotate(${stationData.winddir}, 50, 50)`);
                 }
             }
         }
-    }, 100); // 100ms delay to ensure DOM is ready
+    }
 
     // Update Leaderboard Panel
-    for (const comp of components) {
+    components.forEach(comp => {
         const minValues = [];
         const currentValues = [];
         const maxValues = [];
@@ -110,23 +96,21 @@ async function updateUI() {
             }
         }
 
-        const minLeader = minValues.length > 0 ? getLeader(minValues, true, comp.unit) : "N/A";
-        const currentLeader = currentValues.length > 0 ? getLeader(currentValues, false, comp.unit) : "N/A";
-        const maxLeader = maxValues.length > 0 ? getLeader(maxValues, false, comp.unit) : "N/A";
-
         const minElement = document.getElementById(`min-${comp.key}-leader`);
         const currentElement = document.getElementById(`current-${comp.key}-leader`);
         const maxElement = document.getElementById(`max-${comp.key}-leader`);
 
-        if (minElement) minElement.innerText = minLeader;
-        if (currentElement) currentElement.innerText = currentLeader;
-        if (maxElement) maxElement.innerText = maxLeader;
-    }
+        if (minElement) minElement.textContent = getLeader(minValues, true, comp.unit, comp.decimals);
+        if (currentElement) currentElement.textContent = getLeader(currentValues, false, comp.unit, comp.decimals);
+        if (maxElement) maxElement.textContent = getLeader(maxValues, false, comp.unit, comp.decimals);
+    });
 
     // Update timestamp
-    document.getElementById("last-updated").innerText = `Last Updated: ${new Date().toLocaleString()}`;
+    document.getElementById("last-updated").textContent = `Last Updated: ${new Date().toLocaleString()}`;
 }
 
-// Initial update and periodic refresh
-updateUI();
-setInterval(updateUI, 10000); // Update every 10 seconds
+// Run updateUI when DOM is fully loaded and every 10 seconds
+document.addEventListener("DOMContentLoaded", () => {
+    updateUI();
+    setInterval(updateUI, 10000);
+});

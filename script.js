@@ -5,7 +5,7 @@ const stations = {
     "Brian": "fbbe2845876465d1a954e5e49d757bfa"
 };
 
-// Weather components
+// Weather components with keys and units
 const components = [
     { name: "Temperature", key: "tempf", unit: "°F" },
     { name: "Wind Speed", key: "windspeedmph", unit: "mph" },
@@ -13,7 +13,7 @@ const components = [
     { name: "Pressure", key: "baromrelin", unit: "inHg" }
 ];
 
-// Fetch weather data
+// Fetch weather data from Ambient Weather API
 async function fetchWeatherData(slug) {
     const url = `https://lightning.ambientweather.net/devices?public.slug=${slug}`;
     try {
@@ -43,45 +43,57 @@ function getLeader(stationValues, isMin, unit) {
     }
 }
 
-// Update UI
+// Update the UI with fetched data
 async function updateUI() {
-    console.log("Updating UI..."); // Debug to confirm function runs
+    console.log("Updating UI..."); // Debug log to confirm function runs
     const data = {};
     for (const station in stations) {
         data[station] = await fetchWeatherData(stations[station]);
     }
 
-    // Update Current Data Panel
-    for (const station of Object.keys(stations)) {
-        const stationData = data[station];
-        const prefix = station.toLowerCase();
-        if (stationData) {
-            document.getElementById(`${prefix}-temp`).innerText = stationData.tempf?.toFixed(1) || "--";
-            document.getElementById(`${prefix}-wind`).innerText = stationData.windspeedmph?.toFixed(1) || "--";
-            document.getElementById(`${prefix}-rain`).innerText = stationData.hourlyrainin?.toFixed(1) || "--";
-            document.getElementById(`${prefix}-pressure`).innerText = stationData.baromrelin?.toFixed(1) || "--";
-        }
-    }
-
     // Update Leaderboard Panel
     for (const comp of components) {
-        const minValues = Object.entries(data)
-            .map(([station, d]) => ({ station, value: d?.hl?.[comp.key]?.l }))
-            .filter((item) => item.value !== undefined);
-        const currentValues = Object.entries(data)
-            .map(([station, d]) => ({ station, value: d?.[comp.key] }))
-            .filter((item) => item.value !== undefined);
-        const maxValues = Object.entries(data)
-            .map(([station, d]) => ({ station, value: d?.hl?.[comp.key]?.h }))
-            .filter((item) => item.value !== undefined);
+        const minValues = [];
+        const currentValues = [];
+        const maxValues = [];
 
+        for (const station in data) {
+            const stationData = data[station];
+            if (stationData) {
+                // Check for current value
+                const currentValue = stationData[comp.key];
+                if (currentValue !== undefined) {
+                    currentValues.push({ station, value: currentValue });
+                }
+
+                // Check for min and max values in hl
+                const hlData = stationData.hl;
+                if (hlData && hlData[comp.key]) {
+                    const minValue = hlData[comp.key].l;
+                    const maxValue = hlData[comp.key].h;
+                    if (minValue !== undefined) {
+                        minValues.push({ station, value: minValue });
+                    }
+                    if (maxValue !== undefined) {
+                        maxValues.push({ station, value: maxValue });
+                    }
+                }
+            }
+        }
+
+        // Determine leaders
         const minLeader = minValues.length > 0 ? getLeader(minValues, true, comp.unit) : "N/A";
         const currentLeader = currentValues.length > 0 ? getLeader(currentValues, false, comp.unit) : "N/A";
         const maxLeader = maxValues.length > 0 ? getLeader(maxValues, false, comp.unit) : "N/A";
 
-        document.getElementById(`min-${comp.key}-leader`).innerText = minLeader;
-        document.getElementById(`current-${comp.key}-leader`).innerText = currentLeader;
-        document.getElementById(`max-${comp.key}-leader`).innerText = maxLeader;
+        // Update leaderboard elements
+        const minElement = document.getElementById(`min-${comp.key}-leader`);
+        const currentElement = document.getElementById(`current-${comp.key}-leader`);
+        const maxElement = document.getElementById(`max-${comp.key}-leader`);
+
+        if (minElement) minElement.innerText = minLeader;
+        if (currentElement) currentElement.innerText = currentLeader;
+        if (maxElement) maxElement.innerText = maxLeader;
     }
 
     // Update timestamp

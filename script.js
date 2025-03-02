@@ -45,31 +45,47 @@ function getLeader(stationValues, isMin, unit) {
 
 // Update the UI with fetched data
 async function updateUI() {
-    console.log("Updating UI..."); // Debug log
     const data = {};
     for (const station in stations) {
         data[station] = await fetchWeatherData(stations[station]);
     }
 
-    // Update individual station data
-    for (const station in data) {
-        const stationData = data[station];
-        if (stationData) {
-            const stationLower = station.toLowerCase();
-            // Use !== undefined to handle 0 correctly
-            document.getElementById(`${stationLower}-temp`).innerText = stationData.tempf !== undefined ? stationData.tempf.toFixed(1) : "--";
-            document.getElementById(`${stationLower}-wind`).innerText = stationData.windspeedmph !== undefined ? stationData.windspeedmph.toFixed(1) : "--";
-            document.getElementById(`${stationLower}-rain`).innerText = stationData.hourlyrainin !== undefined ? stationData.hourlyrainin.toFixed(2) : "--";
-            document.getElementById(`${stationLower}-pressure`).innerText = stationData.baromrelin !== undefined ? stationData.baromrelin.toFixed(2) : "--";
-            // Update wind direction arrow if available
-            if (stationData.winddir !== undefined) {
-                const arrow = document.getElementById(`arrow-${stationLower}`);
-                if (arrow) {
-                    arrow.setAttribute("transform", `rotate(${stationData.winddir}, 50, 50)`);
+    // Update individual station data with a slight delay to ensure DOM is ready
+    setTimeout(() => {
+        for (const station in data) {
+            const stationData = data[station];
+            if (stationData) {
+                const stationLower = station.toLowerCase();
+
+                const tempElement = document.getElementById(`${stationLower}-temp`);
+                if (tempElement) {
+                    tempElement.innerText = stationData.tempf !== undefined ? stationData.tempf.toFixed(1) : "--";
+                }
+
+                const windElement = document.getElementById(`${stationLower}-wind`);
+                if (windElement) {
+                    windElement.innerText = stationData.windspeedmph !== undefined ? stationData.windspeedmph.toFixed(1) : "--";
+                }
+
+                const rainElement = document.getElementById(`${stationLower}-rain`);
+                if (rainElement) {
+                    rainElement.innerText = stationData.hourlyrainin !== undefined ? stationData.hourlyrainin.toFixed(2) : "--";
+                }
+
+                const pressureElement = document.getElementById(`${stationLower}-pressure`);
+                if (pressureElement) {
+                    pressureElement.innerText = stationData.baromrelin !== undefined ? stationData.baromrelin.toFixed(2) : "--";
+                }
+
+                if (stationData.winddir !== undefined) {
+                    const arrow = document.getElementById(`arrow-${stationLower}`);
+                    if (arrow) {
+                        arrow.setAttribute("transform", `rotate(${stationData.winddir}, 50, 50)`);
+                    }
                 }
             }
         }
-    }
+    }, 100); // 100ms delay to ensure DOM is ready
 
     // Update Leaderboard Panel
     for (const comp of components) {

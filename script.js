@@ -1,11 +1,11 @@
-// Station slugs
+// Station slugs (unique identifiers for weather stations)
 const stations = {
     "Philippe": "216ccd7e9663b597d059694c2b68cd60",
     "Ken": "e0e95053fed772de0e60444fc4ff88c8",
     "Brian": "fbbe2845876465d1a954e5e49d757bfa"
 };
 
-// Weather components with keys and units
+// Weather components (data types to display)
 const components = [
     { name: "Temperature", key: "tempf", unit: "°F", decimals: 1 },
     { name: "Wind Speed", key: "windspeedmph", unit: "mph", decimals: 1 },
@@ -13,7 +13,7 @@ const components = [
     { name: "Pressure", key: "baromrelin", unit: "inHg", decimals: 2 }
 ];
 
-// Fetch weather data from Ambient Weather API
+// Fetch weather data from the Ambient Weather API
 async function fetchWeatherData(slug) {
     const url = `https://lightning.ambientweather.net/devices?public.slug=${slug}`;
     try {
@@ -26,7 +26,7 @@ async function fetchWeatherData(slug) {
     }
 }
 
-// Determine leaderboard leader with tie handling
+// Determine the leaderboard leader (handles ties)
 function getLeader(stationValues, isMin, unit, decimals) {
     if (stationValues.length === 0) return "No data";
     const sorted = isMin
@@ -48,30 +48,35 @@ async function updateUI() {
         data[station] = await fetchWeatherData(stations[station]);
     }
 
-    // Update individual station data and leaderboard
-    for (const station in data) {
-        const stationData = data[station];
-        if (stationData) {
-            const stationLower = station.toLowerCase();
-            // Update individual station elements
-            components.forEach(comp => {
-                const elementId = `${stationLower}-${comp.key}`;
-                const element = document.getElementById(elementId);
-                if (element) {
-                    const value = stationData[comp.key];
-                    element.textContent = value !== undefined ? value.toFixed(comp.decimals) : "--";
-                }
-            });
+    // Update individual station data with a delay to ensure DOM readiness
+    setTimeout(() => {
+        for (const station in data) {
+            const stationData = data[station];
+            if (stationData) {
+                const stationLower = station.toLowerCase();
+                components.forEach(comp => {
+                    const elementId = `${stationLower}-${comp.key}`;
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        const value = stationData[comp.key];
+                        element.textContent = value !== undefined ? value.toFixed(comp.decimals) : "--";
+                    } else {
+                        console.error(`Element not found: ${elementId}`);
+                    }
+                });
 
-            // Update wind direction arrow
-            if (stationData.winddir !== undefined) {
-                const arrow = document.getElementById(`arrow-${stationLower}`);
-                if (arrow) {
-                    arrow.setAttribute("transform", `rotate(${stationData.winddir}, 50, 50)`);
+                // Update wind direction arrow if present
+                if (stationData.winddir !== undefined) {
+                    const arrow = document.getElementById(`arrow-${stationLower}`);
+                    if (arrow) {
+                        arrow.setAttribute("transform", `rotate(${stationData.winddir}, 50, 50)`);
+                    } else {
+                        console.error(`Arrow element not found for ${stationLower}`);
+                    }
                 }
             }
         }
-    }
+    }, 100); // 100ms delay for DOM readiness
 
     // Update Leaderboard Panel
     components.forEach(comp => {

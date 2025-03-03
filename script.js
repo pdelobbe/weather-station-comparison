@@ -113,13 +113,13 @@ async function updateUI() {
             const maxElement = document.getElementById(`max-${comp.key}-leader`);
 
             if (minElement) {
-                const minLeaderText = getLeader(minValues, true, comp.unit, comp.decimals);
+                const minLeaderText = getLeader(minValues, true, comp.unit, decimals);
                 minElement.textContent = minLeaderText;
                 // Add donut image for daily rain min leader
                 if (comp.key === "dailyrainin") {
                     const donutSpan = document.getElementById("min-dailyrainin-donut");
                     if (donutSpan) {
-                        donutSpan.innerHTML = minLeaderText !== "No data" ? '<img src="IMG_0955.png"alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">' : '';
+                        donutSpan.innerHTML = minLeaderText !== "No data" ? '<img src="IMG_0955.png" alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">' : '';
                     }
                 }
             }

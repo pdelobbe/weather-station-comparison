@@ -10,7 +10,7 @@ const components = [
     { name: "Temperature", key: "tempf", unit: "°F", decimals: 1 },
     { name: "Wind Speed", key: "windspeedmph", unit: "mph", decimals: 1 },
     { name: "Wind Gust", key: "windgustmph", unit: "mph", decimals: 1 },
-    { name: "Rain", key: "hourlyrainin", unit: "in/hr", decimals: 2 },
+    { name: "Daily Rain", key: "dailyrainin", unit: "inches", decimals: 2 },
     { name: "Pressure", key: "baromrelin", unit: "inHg", decimals: 2 }
 ];
 
@@ -36,7 +36,7 @@ function getLeader(stationValues, isMin, unit, decimals) {
     const topValue = sorted[0].value;
     const topStations = sorted.filter((s) => s.value === topValue);
     if (topStations.length === 3) {
-        return `3-way tie (${topValue.toFixed(decimals)}${unit})`; // Updated to show value
+        return `3-way tie (${topValue.toFixed(decimals)}${unit})`;
     }
     if (topStations.length === 2) {
         return `${topStations[0].station} & ${topStations[1].station} (${topValue.toFixed(decimals)}${unit})`;

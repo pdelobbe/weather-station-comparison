@@ -119,7 +119,7 @@ async function updateUI() {
                 if (comp.key === "dailyrainin") {
                     const donutSpan = document.getElementById("min-dailyrainin-donut");
                     if (donutSpan) {
-                        donutSpan.innerHTML = minLeaderText !== "No data" ? '<img src="donut.png" alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">' : '';
+                        donutSpan.innerHTML = minLeaderText !== "No data" ? '<img src="IMG_0955.png"alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">' : '';
                     }
                 }
             }

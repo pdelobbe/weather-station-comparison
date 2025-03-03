@@ -52,6 +52,7 @@ async function updateUI() {
         console.log(`${station} data:`, data[station]);
     }
 
+    // Update station data
     setTimeout(() => {
         for (const station in data) {
             const stationData = data[station];
@@ -79,52 +80,53 @@ async function updateUI() {
                 }
             }
         }
-    }, 100);
 
-    components.forEach(comp => {
-        const minValues = [];
-        const currentValues = [];
-        const maxValues = [];
+        // Update leaderboard after station data
+        components.forEach(comp => {
+            const minValues = [];
+            const currentValues = [];
+            const maxValues = [];
 
-        for (const station in data) {
-            const stationData = data[station];
-            if (stationData) {
-                const currentValue = stationData[comp.key];
-                if (currentValue !== undefined) {
-                    currentValues.push({ station, value: currentValue });
-                }
-                const hlData = stationData.hl;
-                if (hlData && hlData[comp.key]) {
-                    const useMaxForMin = ["windspeedmph", "windgustmph", "dailyrainin"].includes(comp.key);
-                    const minValue = useMaxForMin ? hlData[comp.key].h : hlData[comp.key].l;
-                    const maxValue = hlData[comp.key].h;
-                    console.log(`${station} ${comp.key} - Min Value (using ${useMaxForMin ? 'max' : 'low'}):`, minValue, "Max Value:", maxValue);
-                    if (minValue !== undefined) minValues.push({ station, value: minValue });
-                    if (maxValue !== undefined) maxValues.push({ station, value: maxValue });
-                } else {
-                    console.log(`${station} - No hl data for ${comp.key}`);
-                }
-            }
-        }
-
-        const minElement = document.getElementById(`min-${comp.key}-leader`);
-        const currentElement = document.getElementById(`current-${comp.key}-leader`);
-        const maxElement = document.getElementById(`max-${comp.key}-leader`);
-
-        if (minElement) {
-            const minLeaderText = getLeader(minValues, true, comp.unit, comp.decimals);
-            minElement.textContent = minLeaderText;
-            // Add donut image for daily rain min leader
-            if (comp.key === "dailyrainin") {
-                const donutSpan = document.getElementById("min-dailyrainin-donut");
-                if (donutSpan) {
-                    donutSpan.innerHTML = minLeaderText !== "No data" ? '<img src="donut.png" alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">' : '';
+            for (const station in data) {
+                const stationData = data[station];
+                if (stationData) {
+                    const currentValue = stationData[comp.key];
+                    if (currentValue !== undefined) {
+                        currentValues.push({ station, value: currentValue });
+                    }
+                    const hlData = stationData.hl;
+                    if (hlData && hlData[comp.key]) {
+                        const useMaxForMin = ["windspeedmph", "windgustmph", "dailyrainin"].includes(comp.key);
+                        const minValue = useMaxForMin ? hlData[comp.key].h : hlData[comp.key].l;
+                        const maxValue = hlData[comp.key].h;
+                        console.log(`${station} ${comp.key} - Min Value (using ${useMaxForMin ? 'max' : 'low'}):`, minValue, "Max Value:", maxValue);
+                        if (minValue !== undefined) minValues.push({ station, value: minValue });
+                        if (maxValue !== undefined) maxValues.push({ station, value: maxValue });
+                    } else {
+                        console.log(`${station} - No hl data for ${comp.key}`);
+                    }
                 }
             }
-        }
-        if (currentElement) currentElement.textContent = getLeader(currentValues, false, comp.unit, comp.decimals);
-        if (maxElement) maxElement.textContent = getLeader(maxValues, false, comp.unit, comp.decimals);
-    });
+
+            const minElement = document.getElementById(`min-${comp.key}-leader`);
+            const currentElement = document.getElementById(`current-${comp.key}-leader`);
+            const maxElement = document.getElementById(`max-${comp.key}-leader`);
+
+            if (minElement) {
+                const minLeaderText = getLeader(minValues, true, comp.unit, comp.decimals);
+                minElement.textContent = minLeaderText;
+                // Add donut image for daily rain min leader
+                if (comp.key === "dailyrainin") {
+                    const donutSpan = document.getElementById("min-dailyrainin-donut");
+                    if (donutSpan) {
+                        donutSpan.innerHTML = minLeaderText !== "No data" ? '<img src="https://pngimg.com/uploads/donut/donut_PNG63.png" alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">' : '';
+                    }
+                }
+            }
+            if (currentElement) currentElement.textContent = getLeader(currentValues, false, comp.unit, comp.decimals);
+            if (maxElement) maxElement.textContent = getLeader(maxValues, false, comp.unit, comp.decimals);
+        });
+    }, 200); // Increased delay to 200ms for Safari
 
     document.getElementById("last-updated").textContent = `Last Updated: ${new Date().toLocaleString()}`;
 }

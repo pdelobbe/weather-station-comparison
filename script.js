@@ -95,7 +95,9 @@ async function updateUI() {
                 }
                 const hlData = stationData.hl;
                 if (hlData && hlData[comp.key]) {
-                    const minValue = comp.key === "dailyrainin" ? hlData[comp.key].h : hlData[comp.key].l; // Use max for daily rain min leader
+                    // For wind speed, wind gust, and daily rain, use max values for min leader
+                    const useMaxForMin = ["windspeedmph", "windgustmph", "dailyrainin"].includes(comp.key);
+                    const minValue = useMaxForMin ? hlData[comp.key].h : hlData[comp.key].l;
                     const maxValue = hlData[comp.key].h;
                     if (minValue !== undefined) minValues.push({ station, value: minValue });
                     if (maxValue !== undefined) maxValues.push({ station, value: maxValue });

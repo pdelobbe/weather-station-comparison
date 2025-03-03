@@ -49,9 +49,9 @@ async function updateUI() {
     const data = {};
     for (const station in stations) {
         data[station] = await fetchWeatherData(stations[station]);
+        console.log(`${station} data:`, data[station]); // Log to verify dailyrainin
     }
 
-    // Update individual station data with a delay to ensure DOM readiness
     setTimeout(() => {
         for (const station in data) {
             const stationData = data[station];
@@ -61,7 +61,11 @@ async function updateUI() {
                     const elementId = `${stationLower}-${comp.key}`;
                     const element = document.getElementById(elementId);
                     if (element) {
-                        const value = stationData[comp.key];
+                        let value = stationData[comp.key];
+                        // Fallback for dailyrainin: show 0 if undefined but stationData exists
+                        if (comp.key === "dailyrainin" && value === undefined && stationData.tempf !== undefined) {
+                            value = 0; // Assume 0 if no rain recorded today
+                        }
                         element.textContent = value !== undefined ? value.toFixed(comp.decimals) : "--";
                     } else {
                         console.error(`Element not found: ${elementId}`);
@@ -80,7 +84,6 @@ async function updateUI() {
         }
     }, 100);
 
-    // Update Leaderboard Panel
     components.forEach(comp => {
         const minValues = [];
         const currentValues = [];
@@ -89,7 +92,10 @@ async function updateUI() {
         for (const station in data) {
             const stationData = data[station];
             if (stationData) {
-                const currentValue = stationData[comp.key];
+                let currentValue = stationData[comp.key];
+                if (comp.key === "dailyrainin" && currentValue === undefined && stationData.tempf !== undefined) {
+                    currentValue = 0; // Fallback for leaderboard
+                }
                 if (currentValue !== undefined) {
                     currentValues.push({ station, value: currentValue });
                 }
@@ -112,7 +118,6 @@ async function updateUI() {
         if (maxElement) maxElement.textContent = getLeader(maxValues, false, comp.unit, comp.decimals);
     });
 
-    // Update timestamp
     document.getElementById("last-updated").textContent = `Last Updated: ${new Date().toLocaleString()}`;
 }
 

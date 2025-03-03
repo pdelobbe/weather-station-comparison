@@ -81,7 +81,7 @@ async function updateUI() {
             }
         }
 
-        // Update leaderboard after station data
+        // Update leaderboard
         components.forEach(comp => {
             const minValues = [];
             const currentValues = [];
@@ -119,14 +119,14 @@ async function updateUI() {
                 if (comp.key === "dailyrainin") {
                     const donutSpan = document.getElementById("min-dailyrainin-donut");
                     if (donutSpan) {
-                        donutSpan.innerHTML = minLeaderText !== "No data" ? '<img src="https://pngimg.com/uploads/donut/donut_PNG63.png" alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">' : '';
+                        donutSpan.innerHTML = minLeaderText !== "No data" ? '<img src="https://picsum.photos/16/16" alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">' : '';
                     }
                 }
             }
             if (currentElement) currentElement.textContent = getLeader(currentValues, false, comp.unit, comp.decimals);
             if (maxElement) maxElement.textContent = getLeader(maxValues, false, comp.unit, comp.decimals);
         });
-    }, 200); // Increased delay to 200ms for Safari
+    }, 200);
 
     document.getElementById("last-updated").textContent = `Last Updated: ${new Date().toLocaleString()}`;
 }

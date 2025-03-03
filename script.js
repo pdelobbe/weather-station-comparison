@@ -113,7 +113,7 @@ async function updateUI() {
             const maxElement = document.getElementById(`max-${comp.key}-leader`);
 
             if (minElement) {
-                const minLeaderText = getLeader(minValues, true, comp.unit, decimals);
+                const minLeaderText = getLeader(minValues, true, comp.unit, comp.decimals);
                 minElement.textContent = minLeaderText;
                 // Add donut image for daily rain min leader
                 if (comp.key === "dailyrainin") {

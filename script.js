@@ -111,7 +111,17 @@ async function updateUI() {
         const currentElement = document.getElementById(`current-${comp.key}-leader`);
         const maxElement = document.getElementById(`max-${comp.key}-leader`);
 
-        if (minElement) minElement.textContent = getLeader(minValues, true, comp.unit, comp.decimals);
+        if (minElement) {
+            const minLeaderText = getLeader(minValues, true, comp.unit, comp.decimals);
+            minElement.textContent = minLeaderText;
+            // Add donut image for daily rain min leader
+            if (comp.key === "dailyrainin") {
+                const donutSpan = document.getElementById("min-dailyrainin-donut");
+                if (donutSpan) {
+                    donutSpan.innerHTML = minLeaderText !== "No data" ? '<img src="donut.png" alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">' : '';
+                }
+            }
+        }
         if (currentElement) currentElement.textContent = getLeader(currentValues, false, comp.unit, comp.decimals);
         if (maxElement) maxElement.textContent = getLeader(maxValues, false, comp.unit, comp.decimals);
     });

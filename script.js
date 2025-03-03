@@ -49,7 +49,7 @@ async function updateUI() {
     const data = {};
     for (const station in stations) {
         data[station] = await fetchWeatherData(stations[station]);
-        console.log(`${station} data:`, data[station]); // Log full response
+        console.log(`${station} data:`, data[station]);
     }
 
     setTimeout(() => {
@@ -62,7 +62,7 @@ async function updateUI() {
                     const element = document.getElementById(elementId);
                     if (element) {
                         const value = stationData[comp.key];
-                        console.log(`Updating ${elementId} with value:`, value); // Log each update
+                        console.log(`Updating ${elementId} with value:`, value);
                         element.textContent = value !== undefined ? value.toFixed(comp.decimals) : "--";
                     } else {
                         console.error(`Element not found: ${elementId}`);
@@ -95,7 +95,7 @@ async function updateUI() {
                 }
                 const hlData = stationData.hl;
                 if (hlData && hlData[comp.key]) {
-                    const minValue = hlData[comp.key].l;
+                    const minValue = comp.key === "dailyrainin" ? hlData[comp.key].h : hlData[comp.key].l; // Use max for daily rain min leader
                     const maxValue = hlData[comp.key].h;
                     if (minValue !== undefined) minValues.push({ station, value: minValue });
                     if (maxValue !== undefined) maxValues.push({ station, value: maxValue });

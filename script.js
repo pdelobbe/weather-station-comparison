@@ -49,7 +49,7 @@ async function updateUI() {
     const data = {};
     for (const station in stations) {
         data[station] = await fetchWeatherData(stations[station]);
-        console.log(`${station} data:`, data[station]); // Log to verify dailyrainin
+        console.log(`${station} data:`, data[station]); // Log full response
     }
 
     setTimeout(() => {
@@ -61,11 +61,8 @@ async function updateUI() {
                     const elementId = `${stationLower}-${comp.key}`;
                     const element = document.getElementById(elementId);
                     if (element) {
-                        let value = stationData[comp.key];
-                        // Fallback for dailyrainin: show 0 if undefined but stationData exists
-                        if (comp.key === "dailyrainin" && value === undefined && stationData.tempf !== undefined) {
-                            value = 0; // Assume 0 if no rain recorded today
-                        }
+                        const value = stationData[comp.key];
+                        console.log(`Updating ${elementId} with value:`, value); // Log each update
                         element.textContent = value !== undefined ? value.toFixed(comp.decimals) : "--";
                     } else {
                         console.error(`Element not found: ${elementId}`);
@@ -92,10 +89,7 @@ async function updateUI() {
         for (const station in data) {
             const stationData = data[station];
             if (stationData) {
-                let currentValue = stationData[comp.key];
-                if (comp.key === "dailyrainin" && currentValue === undefined && stationData.tempf !== undefined) {
-                    currentValue = 0; // Fallback for leaderboard
-                }
+                const currentValue = stationData[comp.key];
                 if (currentValue !== undefined) {
                     currentValues.push({ station, value: currentValue });
                 }

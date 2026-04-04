@@ -5,9 +5,11 @@ const stations = {
   Brian: "fbbe2845876465d1a954e5e49d757bfa",
 };
 
-// Metrics to compare — higher is "champion" unless noted
+// Metrics to compare
+// source: "direct" reads from lastData[key], "hl" reads from lastData.hl[hlKey].h or .l
 const metrics = [
-  { key: "tempf", decimals: 1 },
+  { key: "maxtemp", hlKey: "tempf", hlSide: "h", decimals: 1 },
+  { key: "mintemp", hlKey: "tempf", hlSide: "l", decimals: 1 },
   { key: "windspeedmph", decimals: 1 },
   { key: "maxdailygust", decimals: 1 },
   { key: "dailyrainin", decimals: 2 },
@@ -39,14 +41,23 @@ async function fetchAllStations() {
   return Object.fromEntries(results);
 }
 
+// Extract a metric value from station data (direct or from hl high/low)
+function getMetricValue(stationData, metric) {
+  if (!stationData) return undefined;
+  if (metric.hlKey) {
+    return stationData.hl?.[metric.hlKey]?.[metric.hlSide];
+  }
+  return stationData[metric.key];
+}
+
 // Determine champion(s) (highest value) for a metric across stations
-function findChampions(data, key) {
+function findChampions(data, metric) {
   let bestValue = -Infinity;
   const values = [];
 
   for (const station in data) {
-    if (!data[station] || data[station][key] === undefined) continue;
-    const val = data[station][key];
+    const val = getMetricValue(data[station], metric);
+    if (val === undefined) continue;
     values.push({ station, value: val });
     if (val > bestValue) bestValue = val;
   }
@@ -87,7 +98,7 @@ async function updateUI() {
 
   // Update each metric row
   metrics.forEach((metric) => {
-    const result = findChampions(data, metric.key);
+    const result = findChampions(data, metric);
 
     for (const station in data) {
       const stationLower = station.toLowerCase();
@@ -96,9 +107,9 @@ async function updateUI() {
 
       if (!valueEl || !cellEl) continue;
 
-      const stationData = data[station];
-      if (stationData && stationData[metric.key] !== undefined) {
-        valueEl.textContent = stationData[metric.key].toFixed(metric.decimals);
+      const val = getMetricValue(data[station], metric);
+      if (val !== undefined) {
+        valueEl.textContent = val.toFixed(metric.decimals);
       } else {
         valueEl.textContent = "--";
       }

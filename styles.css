@@ -89,35 +89,6 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
-/* ===== Station Legend ===== */
-.station-legend {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-lg);
-    margin-bottom: var(--space-xl);
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-}
-
-.legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-}
-
-.legend-dot.philippe { background: var(--philippe); }
-.legend-dot.ken { background: var(--ken); }
-.legend-dot.brian { background: var(--brian); }
-
-.legend-name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--ink-secondary);
-}
 
 /* ===== Section Title ===== */
 .section-title {
@@ -147,7 +118,34 @@ body {
     transition: background 0.15s ease;
 }
 
-.metric-row:first-child {
+/* Column header row */
+.metric-header {
+    background: transparent;
+    border: none;
+    padding-bottom: var(--space-sm);
+}
+
+.metric-header:hover {
+    background: transparent;
+}
+
+.column-header {
+    border: none !important;
+    background: none !important;
+    padding-bottom: 0;
+}
+
+.column-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.column-name.philippe { color: var(--philippe); }
+.column-name.ken { color: var(--ken); }
+.column-name.brian { color: var(--brian); }
+
+.metric-row:nth-child(2) {
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
@@ -197,33 +195,6 @@ body {
     width: 0;
     flex: 1 1 0;
     justify-content: center;
-}
-
-.station-tag {
-    font-size: 0.65rem;
-    font-weight: 700;
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-[data-station="philippe"] .station-tag {
-    background: rgba(88, 166, 255, 0.15);
-    color: var(--philippe);
-}
-
-[data-station="ken"] .station-tag {
-    background: rgba(126, 231, 135, 0.15);
-    color: var(--ken);
-}
-
-[data-station="brian"] .station-tag {
-    background: rgba(210, 168, 255, 0.15);
-    color: var(--brian);
 }
 
 .value {

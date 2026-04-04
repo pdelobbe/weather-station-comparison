@@ -16,24 +16,24 @@
             <p class="subtitle" id="last-updated">Last updated: --</p>
         </header>
 
-        <!-- Station Legend -->
-        <div class="station-legend">
-            <div class="legend-item" data-station="philippe">
-                <span class="legend-dot philippe"></span>
-                <span class="legend-name">Philippe</span>
-            </div>
-            <div class="legend-item" data-station="ken">
-                <span class="legend-dot ken"></span>
-                <span class="legend-name">Ken</span>
-            </div>
-            <div class="legend-item" data-station="brian">
-                <span class="legend-dot brian"></span>
-                <span class="legend-name">Brian</span>
-            </div>
-        </div>
-
-        <!-- Metric Comparison Rows -->
+        <!-- Metric Comparison Table -->
         <div class="metrics">
+            <!-- Column Headers -->
+            <div class="metric-row metric-header">
+                <div class="metric-label"></div>
+                <div class="metric-values">
+                    <div class="metric-cell column-header" data-station="philippe">
+                        <span class="column-name philippe">Philippe</span>
+                    </div>
+                    <div class="metric-cell column-header" data-station="ken">
+                        <span class="column-name ken">Ken</span>
+                    </div>
+                    <div class="metric-cell column-header" data-station="brian">
+                        <span class="column-name brian">Brian</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="metric-row" id="metric-maxtemp">
                 <div class="metric-label">
                     <span class="metric-icon">🔥</span>
@@ -41,17 +41,17 @@
                 </div>
                 <div class="metric-values">
                     <div class="metric-cell" data-station="philippe">
-                        <span class="station-tag">P</span>
+
                         <span class="value" id="philippe-maxtemp">--</span>
                         <span class="unit">°F</span>
                     </div>
                     <div class="metric-cell" data-station="ken">
-                        <span class="station-tag">K</span>
+
                         <span class="value" id="ken-maxtemp">--</span>
                         <span class="unit">°F</span>
                     </div>
                     <div class="metric-cell" data-station="brian">
-                        <span class="station-tag">B</span>
+
                         <span class="value" id="brian-maxtemp">--</span>
                         <span class="unit">°F</span>
                     </div>
@@ -65,17 +65,17 @@
                 </div>
                 <div class="metric-values">
                     <div class="metric-cell" data-station="philippe">
-                        <span class="station-tag">P</span>
+
                         <span class="value" id="philippe-mintemp">--</span>
                         <span class="unit">°F</span>
                     </div>
                     <div class="metric-cell" data-station="ken">
-                        <span class="station-tag">K</span>
+
                         <span class="value" id="ken-mintemp">--</span>
                         <span class="unit">°F</span>
                     </div>
                     <div class="metric-cell" data-station="brian">
-                        <span class="station-tag">B</span>
+
                         <span class="value" id="brian-mintemp">--</span>
                         <span class="unit">°F</span>
                     </div>
@@ -89,17 +89,17 @@
                 </div>
                 <div class="metric-values">
                     <div class="metric-cell" data-station="philippe">
-                        <span class="station-tag">P</span>
+
                         <span class="value" id="philippe-windspeedmph">--</span>
                         <span class="unit">mph</span>
                     </div>
                     <div class="metric-cell" data-station="ken">
-                        <span class="station-tag">K</span>
+
                         <span class="value" id="ken-windspeedmph">--</span>
                         <span class="unit">mph</span>
                     </div>
                     <div class="metric-cell" data-station="brian">
-                        <span class="station-tag">B</span>
+
                         <span class="value" id="brian-windspeedmph">--</span>
                         <span class="unit">mph</span>
                     </div>
@@ -113,17 +113,17 @@
                 </div>
                 <div class="metric-values">
                     <div class="metric-cell" data-station="philippe">
-                        <span class="station-tag">P</span>
+
                         <span class="value" id="philippe-maxdailygust">--</span>
                         <span class="unit">mph</span>
                     </div>
                     <div class="metric-cell" data-station="ken">
-                        <span class="station-tag">K</span>
+
                         <span class="value" id="ken-maxdailygust">--</span>
                         <span class="unit">mph</span>
                     </div>
                     <div class="metric-cell" data-station="brian">
-                        <span class="station-tag">B</span>
+
                         <span class="value" id="brian-maxdailygust">--</span>
                         <span class="unit">mph</span>
                     </div>
@@ -137,19 +137,19 @@
                 </div>
                 <div class="metric-values">
                     <div class="metric-cell" data-station="philippe">
-                        <span class="station-tag">P</span>
+
                         <span class="value" id="philippe-dailyrainin">--</span>
                         <span class="unit">in</span>
                         <span class="donut-badge" id="donut-philippe-dailyrainin"></span>
                     </div>
                     <div class="metric-cell" data-station="ken">
-                        <span class="station-tag">K</span>
+
                         <span class="value" id="ken-dailyrainin">--</span>
                         <span class="unit">in</span>
                         <span class="donut-badge" id="donut-ken-dailyrainin"></span>
                     </div>
                     <div class="metric-cell" data-station="brian">
-                        <span class="station-tag">B</span>
+
                         <span class="value" id="brian-dailyrainin">--</span>
                         <span class="unit">in</span>
                         <span class="donut-badge" id="donut-brian-dailyrainin"></span>
@@ -164,17 +164,17 @@
                 </div>
                 <div class="metric-values">
                     <div class="metric-cell" data-station="philippe">
-                        <span class="station-tag">P</span>
+
                         <span class="value" id="philippe-eventrainin">--</span>
                         <span class="unit">in</span>
                     </div>
                     <div class="metric-cell" data-station="ken">
-                        <span class="station-tag">K</span>
+
                         <span class="value" id="ken-eventrainin">--</span>
                         <span class="unit">in</span>
                     </div>
                     <div class="metric-cell" data-station="brian">
-                        <span class="station-tag">B</span>
+
                         <span class="value" id="brian-eventrainin">--</span>
                         <span class="unit">in</span>
                     </div>
@@ -188,17 +188,17 @@
                 </div>
                 <div class="metric-values">
                     <div class="metric-cell" data-station="philippe">
-                        <span class="station-tag">P</span>
+
                         <span class="value" id="philippe-baromrelin">--</span>
                         <span class="unit">inHg</span>
                     </div>
                     <div class="metric-cell" data-station="ken">
-                        <span class="station-tag">K</span>
+
                         <span class="value" id="ken-baromrelin">--</span>
                         <span class="unit">inHg</span>
                     </div>
                     <div class="metric-cell" data-station="brian">
-                        <span class="station-tag">B</span>
+
                         <span class="value" id="brian-baromrelin">--</span>
                         <span class="unit">inHg</span>
                     </div>

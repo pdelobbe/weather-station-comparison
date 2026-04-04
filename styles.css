@@ -249,8 +249,7 @@ body {
 
 .compass-row {
     display: flex;
-    justify-content: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .compass-card {
@@ -263,7 +262,6 @@ body {
     border-radius: var(--radius-md);
     padding: 8px;
     flex: 1;
-    max-width: 140px;
 }
 
 .compass-label {
@@ -345,7 +343,6 @@ body {
 
 .tally-row {
     display: flex;
-    justify-content: center;
     gap: 10px;
 }
 
@@ -359,7 +356,6 @@ body {
     border-radius: var(--radius-md);
     padding: 8px 20px;
     flex: 1;
-    max-width: 160px;
     transition: all 0.25s ease;
 }
 

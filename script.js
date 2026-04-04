@@ -9,7 +9,7 @@ const stations = {
 // source: "direct" reads from lastData[key], "hl" reads from lastData.hl[hlKey].h or .l
 const metrics = [
   { key: "maxtemp", hlKey: "tempf", hlSide: "h", decimals: 1 },
-  { key: "mintemp", hlKey: "tempf", hlSide: "l", decimals: 1 },
+  { key: "mintemp", hlKey: "tempf", hlSide: "l", decimals: 1, lowWins: true },
   { key: "windspeedmph", decimals: 1 },
   { key: "maxdailygust", decimals: 1 },
   { key: "dailyrainin", decimals: 2 },
@@ -50,20 +50,23 @@ function getMetricValue(stationData, metric) {
   return stationData[metric.key];
 }
 
-// Determine champion(s) (highest value) for a metric across stations
+// Determine champion(s) for a metric — lowest wins if metric.lowWins is true
 function findChampions(data, metric) {
-  let bestValue = -Infinity;
   const values = [];
 
   for (const station in data) {
     const val = getMetricValue(data[station], metric);
     if (val === undefined) continue;
     values.push({ station, value: val });
-    if (val > bestValue) bestValue = val;
   }
 
+  if (values.length === 0) return { winners: [], values };
+
+  const bestValue = metric.lowWins
+    ? Math.min(...values.map((v) => v.value))
+    : Math.max(...values.map((v) => v.value));
+
   const winners = values.filter((v) => v.value === bestValue);
-  // All tied = no champion
   if (winners.length === values.length) return { winners: [], values };
   return { winners: winners.map((w) => w.station), values };
 }

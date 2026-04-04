@@ -17,6 +17,8 @@ const metrics = [
   { key: "baromrelin", decimals: 2 },
 ];
 
+const REFRESH_INTERVAL = 10; // seconds
+
 // Fetch weather data from Ambient Weather API
 async function fetchWeatherData(slug) {
   const url = `https://lightning.ambientweather.net/devices?public.slug=${slug}`;
@@ -92,6 +94,70 @@ function findDonutLoser(data) {
   if (tied.length === values.length) return null; // all tied = no loser
   if (tied.length > 1) return tied.map((t) => t.station); // multiple losers
   return [worst];
+}
+
+// --- Countdown timer ---
+let lastFetchTime = null;
+let countdownTimer = null;
+
+function startCountdown() {
+  if (countdownTimer) clearInterval(countdownTimer);
+  lastFetchTime = Date.now();
+
+  countdownTimer = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - lastFetchTime) / 1000);
+    const remaining = Math.max(0, REFRESH_INTERVAL - elapsed);
+    const el = document.getElementById("last-updated");
+    if (el) {
+      const time = new Date(lastFetchTime).toLocaleTimeString();
+      el.textContent = `Updated ${time} · next in ${remaining}s`;
+    }
+  }, 1000);
+}
+
+// --- Pull to refresh ---
+function initPullToRefresh() {
+  const app = document.querySelector(".app");
+  const indicator = document.getElementById("pull-indicator");
+  let startY = 0;
+  let pulling = false;
+  const threshold = 80;
+
+  app.addEventListener("touchstart", (e) => {
+    if (window.scrollY === 0) {
+      startY = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+
+  app.addEventListener("touchmove", (e) => {
+    if (!pulling) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 0 && dy < 150) {
+      const progress = Math.min(dy / threshold, 1);
+      indicator.style.height = `${dy * 0.4}px`;
+      indicator.style.opacity = progress;
+      indicator.textContent = progress >= 1 ? "Release to refresh" : "Pull to refresh";
+    }
+  }, { passive: true });
+
+  app.addEventListener("touchend", () => {
+    if (!pulling) return;
+    pulling = false;
+    const h = parseFloat(indicator.style.height) || 0;
+    if (h >= threshold * 0.4) {
+      indicator.textContent = "Refreshing...";
+      indicator.style.height = "24px";
+      indicator.style.opacity = "1";
+      updateUI().then(() => {
+        indicator.style.height = "0";
+        indicator.style.opacity = "0";
+      });
+    } else {
+      indicator.style.height = "0";
+      indicator.style.opacity = "0";
+    }
+  });
 }
 
 // Update the entire UI
@@ -181,13 +247,18 @@ async function updateUI() {
     }
   }
 
-  // Timestamp
-  document.getElementById("last-updated").textContent =
-    `Last updated: ${new Date().toLocaleString()}`;
+  // Reset countdown
+  startCountdown();
 }
 
 // Boot
 document.addEventListener("DOMContentLoaded", () => {
   updateUI();
-  setInterval(updateUI, 10000);
+  setInterval(updateUI, REFRESH_INTERVAL * 1000);
+  initPullToRefresh();
+
+  // Refresh immediately when app returns from background
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") updateUI();
+  });
 });

@@ -60,6 +60,21 @@ body {
     padding: 12px 16px;
 }
 
+/* ===== Pull to Refresh ===== */
+.pull-indicator {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: height 0.2s ease, opacity 0.2s ease;
+}
+
 /* ===== Header ===== */
 .header {
     text-align: center;

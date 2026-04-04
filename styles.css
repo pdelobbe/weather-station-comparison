@@ -29,18 +29,10 @@
     --ken: #7ee787;
     --brian: #d2a8ff;
 
-    /* Spacing */
-    --space-xs: 4px;
-    --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 32px;
-    --space-2xl: 48px;
-
     /* Radius */
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
+    --radius-sm: 5px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
 
     /* Type */
     --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -63,41 +55,40 @@ body {
 
 /* ===== App Shell ===== */
 .app {
-    max-width: 720px;
+    max-width: 680px;
     margin: 0 auto;
-    padding: var(--space-lg) var(--space-md);
+    padding: 12px 16px;
 }
 
 /* ===== Header ===== */
 .header {
     text-align: center;
-    margin-bottom: var(--space-xl);
+    margin-bottom: 12px;
 }
 
 .header h1 {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 800;
     letter-spacing: -0.03em;
     color: var(--ink-primary);
 }
 
 .subtitle {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--ink-muted);
-    margin-top: var(--space-xs);
+    margin-top: 2px;
     font-weight: 500;
     font-variant-numeric: tabular-nums;
 }
 
-
 /* ===== Section Title ===== */
 .section-title {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--ink-muted);
-    margin-bottom: var(--space-md);
+    margin-bottom: 8px;
     text-align: center;
 }
 
@@ -105,8 +96,8 @@ body {
 .metrics {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    margin-bottom: var(--space-2xl);
+    gap: 1px;
+    margin-bottom: 16px;
 }
 
 .metric-row {
@@ -114,7 +105,7 @@ body {
     align-items: center;
     background: var(--surface);
     border: 1px solid var(--border);
-    padding: var(--space-md) var(--space-lg);
+    padding: 8px 16px;
     transition: background 0.15s ease;
 }
 
@@ -122,7 +113,7 @@ body {
 .metric-header {
     background: transparent;
     border: none;
-    padding-bottom: var(--space-sm);
+    padding: 0 16px 4px;
 }
 
 .metric-header:hover {
@@ -132,11 +123,11 @@ body {
 .column-header {
     border: none !important;
     background: none !important;
-    padding-bottom: 0;
+    padding: 0;
 }
 
 .column-name {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: -0.01em;
 }
@@ -160,19 +151,19 @@ body {
 .metric-label {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
-    min-width: 140px;
+    gap: 6px;
+    min-width: 120px;
     flex-shrink: 0;
 }
 
 .metric-icon {
-    font-size: 1rem;
-    width: 24px;
+    font-size: 0.85rem;
+    width: 20px;
     text-align: center;
 }
 
 .metric-name {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--ink-secondary);
 }
@@ -180,15 +171,15 @@ body {
 .metric-values {
     display: flex;
     flex: 1;
-    gap: var(--space-sm);
+    gap: 6px;
     justify-content: flex-end;
 }
 
 .metric-cell {
     display: flex;
     align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-sm) var(--space-md);
+    gap: 3px;
+    padding: 5px 10px;
     border-radius: var(--radius-sm);
     border: 1px solid transparent;
     transition: all 0.25s ease;
@@ -198,14 +189,14 @@ body {
 }
 
 .value {
-    font-size: 1.15rem;
+    font-size: 1rem;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
 }
 
 .unit {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 500;
     color: var(--ink-muted);
 }
@@ -228,8 +219,8 @@ body {
 
 .donut-badge {
     display: none;
-    font-size: 1rem;
-    margin-left: var(--space-xs);
+    font-size: 0.85rem;
+    margin-left: 2px;
 }
 
 .metric-cell.donut-loser .donut-badge {
@@ -238,37 +229,37 @@ body {
 
 /* ===== Compass Section ===== */
 .compass-section {
-    margin-bottom: var(--space-2xl);
+    margin-bottom: 16px;
 }
 
 .compass-row {
     display: flex;
     justify-content: center;
-    gap: var(--space-lg);
+    gap: 12px;
 }
 
 .compass-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-sm);
+    gap: 4px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: var(--space-md);
+    padding: 8px;
     flex: 1;
-    max-width: 160px;
+    max-width: 140px;
 }
 
 .compass-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: var(--ink-secondary);
 }
 
 .compass {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
 }
 
 .compass-ring {
@@ -326,7 +317,7 @@ body {
 [data-station="brian"] .compass-arrow circle { fill: var(--brian); }
 
 .compass-degrees {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
     color: var(--ink-secondary);
@@ -334,26 +325,26 @@ body {
 
 /* ===== Win Tally ===== */
 .tally-section {
-    margin-bottom: var(--space-xl);
+    margin-bottom: 12px;
 }
 
 .tally-row {
     display: flex;
     justify-content: center;
-    gap: var(--space-md);
+    gap: 10px;
 }
 
 .tally-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-xs);
+    gap: 2px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: var(--space-md) var(--space-xl);
+    padding: 8px 20px;
     flex: 1;
-    max-width: 180px;
+    max-width: 160px;
     transition: all 0.25s ease;
 }
 
@@ -363,13 +354,13 @@ body {
 }
 
 .tally-name {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     color: var(--ink-secondary);
 }
 
 .tally-count {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 800;
     letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
@@ -381,7 +372,7 @@ body {
 }
 
 .tally-label {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -395,53 +386,107 @@ body {
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
     .app {
-        padding: var(--space-md) var(--space-sm);
+        padding: 8px 8px;
     }
 
-    .metric-row {
-        flex-direction: column;
-        align-items: stretch;
-        padding: var(--space-md);
-        gap: var(--space-sm);
+    .header {
+        margin-bottom: 8px;
     }
 
-    .metric-label {
-        min-width: unset;
-    }
-
-    .metric-values {
-        justify-content: space-between;
-    }
-
-    .metric-cell {
-        min-width: unset;
-        flex: 1;
-        padding: var(--space-sm);
-    }
-
-    .value {
+    .header h1 {
         font-size: 1rem;
     }
 
+    .metric-row {
+        padding: 6px 10px;
+    }
+
+    .metric-header {
+        padding: 0 10px 3px;
+    }
+
+    .metric-label {
+        min-width: 90px;
+        gap: 4px;
+    }
+
+    .metric-icon {
+        font-size: 0.75rem;
+        width: 16px;
+    }
+
+    .metric-name {
+        font-size: 0.65rem;
+    }
+
+    .column-name {
+        font-size: 0.65rem;
+    }
+
+    .metric-cell {
+        padding: 4px 6px;
+    }
+
+    .value {
+        font-size: 0.85rem;
+    }
+
+    .unit {
+        font-size: 0.6rem;
+    }
+
     .compass-card {
-        max-width: 120px;
-        padding: var(--space-sm);
+        max-width: 110px;
+        padding: 6px;
     }
 
     .compass {
-        width: 80px;
-        height: 80px;
+        width: 64px;
+        height: 64px;
+    }
+
+    .compass-label {
+        font-size: 0.6rem;
+    }
+
+    .compass-degrees {
+        font-size: 0.6rem;
     }
 
     .tally-card {
-        padding: var(--space-md);
+        padding: 6px 12px;
     }
 
     .tally-count {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
     }
 
-    .station-legend {
-        gap: var(--space-md);
+    .tally-name {
+        font-size: 0.6rem;
+    }
+
+    .tally-label {
+        font-size: 0.55rem;
+    }
+
+    .section-title {
+        font-size: 0.6rem;
+        margin-bottom: 6px;
+    }
+
+    .metrics {
+        margin-bottom: 12px;
+    }
+
+    .compass-section {
+        margin-bottom: 12px;
+    }
+
+    .compass-row {
+        gap: 8px;
+    }
+
+    .tally-row {
+        gap: 8px;
     }
 }

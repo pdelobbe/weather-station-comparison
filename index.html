@@ -4,96 +4,275 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Station Comparison</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="main-container">
-        <h1>Weather Station Comparison</h1>
-        
-        <!-- Current Data Panel -->
-        <div class="comparison">
-            <div class="station" id="station-philippe">
-                <h2>Philippe</h2>
-                <p>Temp: <span id="philippe-tempf">--</span>°F</p>
-                <p>Wind Speed: <span id="philippe-windspeedmph">--</span> mph</p>
-                <p>Wind Gust: <span id="philippe-windgustmph">--</span> mph</p>
-                <p>Daily Rain: <span id="philippe-dailyrainin">--</span> inches</p>
-                <p>Event Rain: <span id="philippe-eventrainin">--</span> inches</p>
-                <p>Pressure: <span id="philippe-baromrelin">--</span> inHg</p>
-                <svg width="100" height="100" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" stroke="black" stroke-width="1" fill="none"/>
-                    <g id="arrow-philippe">
-                        <!-- Simple arrow pointing to center -->
-                        <line x1="50" y1="10" x2="50" y2="45" stroke="red" stroke-width="2"/>
-                        <polygon points="50,50 47,45 53,45" fill="red" stroke="red" stroke-width="1"/>
-                    </g>
-                </svg>
+    <div class="app">
+        <header class="header">
+            <h1>Weather Station Showdown</h1>
+            <p class="subtitle" id="last-updated">Last updated: --</p>
+        </header>
+
+        <!-- Station Legend -->
+        <div class="station-legend">
+            <div class="legend-item" data-station="philippe">
+                <span class="legend-dot philippe"></span>
+                <span class="legend-name">Philippe</span>
             </div>
-            <div class="station" id="station-ken">
-                <h2>Ken</h2>
-                <p>Temp: <span id="ken-tempf">--</span>°F</p>
-                <p>Wind Speed: <span id="ken-windspeedmph">--</span> mph</p>
-                <p>Wind Gust: <span id="ken-windgustmph">--</span> mph</p>
-                <p>Daily Rain: <span id="ken-dailyrainin">--</span> inches</p>
-                <p>Event Rain: <span id="ken-eventrainin">--</span> inches</p>
-                <p>Pressure: <span id="ken-baromrelin">--</span> inHg</p>
-                <svg width="100" height="100" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" stroke="black" stroke-width="1" fill="none"/>
-                    <g id="arrow-ken">
-                        <!-- Simple arrow pointing to center -->
-                        <line x1="50" y1="10" x2="50" y2="45" stroke="red" stroke-width="2"/>
-                        <polygon points="50,50 47,45 53,45" fill="red" stroke="red" stroke-width="1"/>
-                    </g>
-                </svg>
+            <div class="legend-item" data-station="ken">
+                <span class="legend-dot ken"></span>
+                <span class="legend-name">Ken</span>
             </div>
-            <div class="station" id="station-brian">
-                <h2>Brian</h2>
-                <p>Temp: <span id="brian-tempf">--</span>°F</p>
-                <p>Wind Speed: <span id="brian-windspeedmph">--</span> mph</p>
-                <p>Wind Gust: <span id="brian-windgustmph">--</span> mph</p>
-                <p>Daily Rain: <span id="brian-dailyrainin">--</span> inches</p>
-                <p>Event Rain: <span id="brian-eventrainin">--</span> inches</p>
-                <p>Pressure: <span id="brian-baromrelin">--</span> inHg</p>
-                <svg width="100" height="100" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="40" stroke="black" stroke-width="1" fill="none"/>
-                    <g id="arrow-brian">
-                        <!-- Simple arrow pointing to center -->
-                        <line x1="50" y1="10" x2="50" y2="45" stroke="red" stroke-width="2"/>
-                        <polygon points="50,50 47,45 53,45" fill="red" stroke="red" stroke-width="1"/>
-                    </g>
-                </svg>
+            <div class="legend-item" data-station="brian">
+                <span class="legend-dot brian"></span>
+                <span class="legend-name">Brian</span>
             </div>
         </div>
-        
-        <!-- Leaderboard Panel -->
-        <div class="leaderboard">
-            <h2>Max Leaders</h2>
-            <p>Temperature: <span id="max-tempf-leader">--</span></p>
-            <p>Wind Speed: <span id="max-windspeedmph-leader">--</span></p>
-            <p>Wind Gust: <span id="max-windgustmph-leader">--</span></p>
-            <p>Daily Rain: <span id="max-dailyrainin-leader">--</span></p>
-            <p>Event Rain: <span id="max-eventrainin-leader">--</span></p>
-            <p>Pressure: <span id="max-baromrelin-leader">--</span></p>
-            
-            <h2>Min Leaders</h2>
-            <p>Temperature: <span id="min-tempf-leader">--</span></p>
-            <p>Wind Speed: <span id="min-windspeedmph-leader">--</span></p>
-            <p>Wind Gust: <span id="min-windgustmph-leader">--</span></p>
-            <p>Daily Rain: <span id="min-dailyrainin-leader">--</span><span id="min-dailyrainin-donut"></span></p>
-            <p>Event Rain: <span id="min-eventrainin-leader">--</span></p>
-            <p>Pressure: <span id="min-baromrelin-leader">--</span></p>
-            
-            <h2>Current Leaders</h2>
-            <p>Temperature: <span id="current-tempf-leader">--</span></p>
-            <p>Wind Speed: <span id="current-windspeedmph-leader">--</span></p>
-            <p>Wind Gust: <span id="current-windgustmph-leader">--</span></p>
-            <p>Daily Rain: <span id="current-dailyrainin-leader">--</span></p>
-            <p>Event Rain: <span id="current-eventrainin-leader">--</span></p>
-            <p>Pressure: <span id="current-baromrelin-leader">--</span></p>
+
+        <!-- Metric Comparison Rows -->
+        <div class="metrics">
+            <div class="metric-row" id="metric-tempf">
+                <div class="metric-label">
+                    <span class="metric-icon">🌡</span>
+                    <span class="metric-name">Temperature</span>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-cell" data-station="philippe">
+                        <span class="station-tag">P</span>
+                        <span class="value" id="philippe-tempf">--</span>
+                        <span class="unit">°F</span>
+                    </div>
+                    <div class="metric-cell" data-station="ken">
+                        <span class="station-tag">K</span>
+                        <span class="value" id="ken-tempf">--</span>
+                        <span class="unit">°F</span>
+                    </div>
+                    <div class="metric-cell" data-station="brian">
+                        <span class="station-tag">B</span>
+                        <span class="value" id="brian-tempf">--</span>
+                        <span class="unit">°F</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-row" id="metric-windspeedmph">
+                <div class="metric-label">
+                    <span class="metric-icon">💨</span>
+                    <span class="metric-name">Wind Speed</span>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-cell" data-station="philippe">
+                        <span class="station-tag">P</span>
+                        <span class="value" id="philippe-windspeedmph">--</span>
+                        <span class="unit">mph</span>
+                    </div>
+                    <div class="metric-cell" data-station="ken">
+                        <span class="station-tag">K</span>
+                        <span class="value" id="ken-windspeedmph">--</span>
+                        <span class="unit">mph</span>
+                    </div>
+                    <div class="metric-cell" data-station="brian">
+                        <span class="station-tag">B</span>
+                        <span class="value" id="brian-windspeedmph">--</span>
+                        <span class="unit">mph</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-row" id="metric-maxdailygust">
+                <div class="metric-label">
+                    <span class="metric-icon">🌪</span>
+                    <span class="metric-name">Max Gust</span>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-cell" data-station="philippe">
+                        <span class="station-tag">P</span>
+                        <span class="value" id="philippe-maxdailygust">--</span>
+                        <span class="unit">mph</span>
+                    </div>
+                    <div class="metric-cell" data-station="ken">
+                        <span class="station-tag">K</span>
+                        <span class="value" id="ken-maxdailygust">--</span>
+                        <span class="unit">mph</span>
+                    </div>
+                    <div class="metric-cell" data-station="brian">
+                        <span class="station-tag">B</span>
+                        <span class="value" id="brian-maxdailygust">--</span>
+                        <span class="unit">mph</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-row" id="metric-dailyrainin">
+                <div class="metric-label">
+                    <span class="metric-icon">🌧</span>
+                    <span class="metric-name">Daily Rain</span>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-cell" data-station="philippe">
+                        <span class="station-tag">P</span>
+                        <span class="value" id="philippe-dailyrainin">--</span>
+                        <span class="unit">in</span>
+                        <span class="donut-badge" id="donut-philippe-dailyrainin"></span>
+                    </div>
+                    <div class="metric-cell" data-station="ken">
+                        <span class="station-tag">K</span>
+                        <span class="value" id="ken-dailyrainin">--</span>
+                        <span class="unit">in</span>
+                        <span class="donut-badge" id="donut-ken-dailyrainin"></span>
+                    </div>
+                    <div class="metric-cell" data-station="brian">
+                        <span class="station-tag">B</span>
+                        <span class="value" id="brian-dailyrainin">--</span>
+                        <span class="unit">in</span>
+                        <span class="donut-badge" id="donut-brian-dailyrainin"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-row" id="metric-eventrainin">
+                <div class="metric-label">
+                    <span class="metric-icon">⛈</span>
+                    <span class="metric-name">Event Rain</span>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-cell" data-station="philippe">
+                        <span class="station-tag">P</span>
+                        <span class="value" id="philippe-eventrainin">--</span>
+                        <span class="unit">in</span>
+                    </div>
+                    <div class="metric-cell" data-station="ken">
+                        <span class="station-tag">K</span>
+                        <span class="value" id="ken-eventrainin">--</span>
+                        <span class="unit">in</span>
+                    </div>
+                    <div class="metric-cell" data-station="brian">
+                        <span class="station-tag">B</span>
+                        <span class="value" id="brian-eventrainin">--</span>
+                        <span class="unit">in</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-row" id="metric-baromrelin">
+                <div class="metric-label">
+                    <span class="metric-icon">📊</span>
+                    <span class="metric-name">Pressure</span>
+                </div>
+                <div class="metric-values">
+                    <div class="metric-cell" data-station="philippe">
+                        <span class="station-tag">P</span>
+                        <span class="value" id="philippe-baromrelin">--</span>
+                        <span class="unit">inHg</span>
+                    </div>
+                    <div class="metric-cell" data-station="ken">
+                        <span class="station-tag">K</span>
+                        <span class="value" id="ken-baromrelin">--</span>
+                        <span class="unit">inHg</span>
+                    </div>
+                    <div class="metric-cell" data-station="brian">
+                        <span class="station-tag">B</span>
+                        <span class="value" id="brian-baromrelin">--</span>
+                        <span class="unit">inHg</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-        <p id="last-updated">Last Updated: --</p>
+
+        <!-- Wind Direction Compasses -->
+        <div class="compass-section">
+            <h2 class="section-title">Wind Direction</h2>
+            <div class="compass-row">
+                <div class="compass-card" data-station="philippe">
+                    <span class="compass-label">Philippe</span>
+                    <svg class="compass" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="52" class="compass-ring"/>
+                        <text x="60" y="16" class="compass-cardinal">N</text>
+                        <text x="108" y="64" class="compass-cardinal">E</text>
+                        <text x="60" y="114" class="compass-cardinal">S</text>
+                        <text x="12" y="64" class="compass-cardinal">W</text>
+                        <!-- Tick marks -->
+                        <line x1="60" y1="12" x2="60" y2="18" class="compass-tick"/>
+                        <line x1="108" y1="60" x2="102" y2="60" class="compass-tick"/>
+                        <line x1="60" y1="108" x2="60" y2="102" class="compass-tick"/>
+                        <line x1="12" y1="60" x2="18" y2="60" class="compass-tick"/>
+                        <g id="arrow-philippe" class="compass-arrow">
+                            <line x1="60" y1="22" x2="60" y2="55" stroke-width="3"/>
+                            <polygon points="60,18 55,30 65,30"/>
+                            <circle cx="60" cy="60" r="4"/>
+                        </g>
+                    </svg>
+                    <span class="compass-degrees" id="philippe-winddir">--°</span>
+                </div>
+                <div class="compass-card" data-station="ken">
+                    <span class="compass-label">Ken</span>
+                    <svg class="compass" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="52" class="compass-ring"/>
+                        <text x="60" y="16" class="compass-cardinal">N</text>
+                        <text x="108" y="64" class="compass-cardinal">E</text>
+                        <text x="60" y="114" class="compass-cardinal">S</text>
+                        <text x="12" y="64" class="compass-cardinal">W</text>
+                        <line x1="60" y1="12" x2="60" y2="18" class="compass-tick"/>
+                        <line x1="108" y1="60" x2="102" y2="60" class="compass-tick"/>
+                        <line x1="60" y1="108" x2="60" y2="102" class="compass-tick"/>
+                        <line x1="12" y1="60" x2="18" y2="60" class="compass-tick"/>
+                        <g id="arrow-ken" class="compass-arrow">
+                            <line x1="60" y1="22" x2="60" y2="55" stroke-width="3"/>
+                            <polygon points="60,18 55,30 65,30"/>
+                            <circle cx="60" cy="60" r="4"/>
+                        </g>
+                    </svg>
+                    <span class="compass-degrees" id="ken-winddir">--°</span>
+                </div>
+                <div class="compass-card" data-station="brian">
+                    <span class="compass-label">Brian</span>
+                    <svg class="compass" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="52" class="compass-ring"/>
+                        <text x="60" y="16" class="compass-cardinal">N</text>
+                        <text x="108" y="64" class="compass-cardinal">E</text>
+                        <text x="60" y="114" class="compass-cardinal">S</text>
+                        <text x="12" y="64" class="compass-cardinal">W</text>
+                        <line x1="60" y1="12" x2="60" y2="18" class="compass-tick"/>
+                        <line x1="108" y1="60" x2="102" y2="60" class="compass-tick"/>
+                        <line x1="60" y1="108" x2="60" y2="102" class="compass-tick"/>
+                        <line x1="12" y1="60" x2="18" y2="60" class="compass-tick"/>
+                        <g id="arrow-brian" class="compass-arrow">
+                            <line x1="60" y1="22" x2="60" y2="55" stroke-width="3"/>
+                            <polygon points="60,18 55,30 65,30"/>
+                            <circle cx="60" cy="60" r="4"/>
+                        </g>
+                    </svg>
+                    <span class="compass-degrees" id="brian-winddir">--°</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Tally -->
+        <div class="tally-section">
+            <h2 class="section-title">Win Count</h2>
+            <div class="tally-row">
+                <div class="tally-card" id="tally-philippe" data-station="philippe">
+                    <span class="tally-name">Philippe</span>
+                    <span class="tally-count" id="wins-philippe">0</span>
+                    <span class="tally-label">wins</span>
+                </div>
+                <div class="tally-card" id="tally-ken" data-station="ken">
+                    <span class="tally-name">Ken</span>
+                    <span class="tally-count" id="wins-ken">0</span>
+                    <span class="tally-label">wins</span>
+                </div>
+                <div class="tally-card" id="tally-brian" data-station="brian">
+                    <span class="tally-name">Brian</span>
+                    <span class="tally-count" id="wins-brian">0</span>
+                    <span class="tally-label">wins</span>
+                </div>
+            </div>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

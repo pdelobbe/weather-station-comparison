@@ -1,48 +1,476 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    margin: 0;
+/* ===== Tokens ===== */
+:root {
+    /* Canvas */
+    --canvas: #0d1117;
+    --surface: #161b22;
+    --surface-raised: #1c2129;
+    --surface-hover: #21262d;
+
+    /* Ink */
+    --ink-primary: #e6edf3;
+    --ink-secondary: #8b949e;
+    --ink-muted: #484f58;
+
+    /* Borders */
+    --border: rgba(240, 246, 252, 0.06);
+    --border-emphasis: rgba(240, 246, 252, 0.12);
+
+    /* Champion gold */
+    --champion: #f0b429;
+    --champion-glow: rgba(240, 180, 41, 0.15);
+    --champion-border: rgba(240, 180, 41, 0.35);
+
+    /* Donut loser — subtle shame */
+    --donut-bg: rgba(220, 80, 80, 0.12);
+    --donut-border: rgba(220, 80, 80, 0.3);
+
+    /* Station colors */
+    --philippe: #58a6ff;
+    --ken: #7ee787;
+    --brian: #d2a8ff;
+
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    /* Radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+
+    /* Type */
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.main-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
+/* ===== Reset ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--canvas);
+    color: var(--ink-primary);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ===== App Shell ===== */
+.app {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: var(--space-lg) var(--space-md);
+}
+
+/* ===== Header ===== */
+.header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.header h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--ink-primary);
+}
+
+.subtitle {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    margin-top: var(--space-xs);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===== Station Legend ===== */
+.station-legend {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.legend-dot.philippe { background: var(--philippe); }
+.legend-dot.ken { background: var(--ken); }
+.legend-dot.brian { background: var(--brian); }
+
+.legend-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-secondary);
+}
+
+/* ===== Section Title ===== */
+.section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    margin-bottom: var(--space-md);
     text-align: center;
 }
 
-.comparison {
+/* ===== Metric Rows ===== */
+.metrics {
     display: flex;
-    justify-content: space-around;
-    margin-bottom: 20px;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: var(--space-2xl);
 }
 
-.station {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    width: 30%;
+.metric-row {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: var(--space-md) var(--space-lg);
+    transition: background 0.15s ease;
 }
 
-.leaderboard {
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    margin-top: 20px;
+.metric-row:first-child {
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
-h1, h2 {
-    color: #333;
+.metric-row:last-child {
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
-svg {
-    display: block;
-    margin: 10px auto;
+.metric-row:hover {
+    background: var(--surface-raised);
 }
 
-#last-updated {
-    margin-top: 20px;
-    color: #666;
+.metric-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 140px;
+    flex-shrink: 0;
+}
+
+.metric-icon {
+    font-size: 1rem;
+    width: 24px;
+    text-align: center;
+}
+
+.metric-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-secondary);
+}
+
+.metric-values {
+    display: flex;
+    flex: 1;
+    gap: var(--space-sm);
+    justify-content: flex-end;
+}
+
+.metric-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    transition: all 0.25s ease;
+    width: 0;
+    flex: 1 1 0;
+    justify-content: center;
+}
+
+.station-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+[data-station="philippe"] .station-tag {
+    background: rgba(88, 166, 255, 0.15);
+    color: var(--philippe);
+}
+
+[data-station="ken"] .station-tag {
+    background: rgba(126, 231, 135, 0.15);
+    color: var(--ken);
+}
+
+[data-station="brian"] .station-tag {
+    background: rgba(210, 168, 255, 0.15);
+    color: var(--brian);
+}
+
+.value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+
+.unit {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+}
+
+/* ===== Champion State ===== */
+.metric-cell.champion {
+    background: var(--champion-glow);
+    border-color: var(--champion-border);
+}
+
+.metric-cell.champion .value {
+    color: var(--champion);
+}
+
+/* ===== Donut Loser State ===== */
+.metric-cell.donut-loser {
+    background: var(--donut-bg);
+    border-color: var(--donut-border);
+}
+
+.donut-badge {
+    display: none;
+    font-size: 1rem;
+    margin-left: var(--space-xs);
+}
+
+.metric-cell.donut-loser .donut-badge {
+    display: inline;
+}
+
+/* ===== Compass Section ===== */
+.compass-section {
+    margin-bottom: var(--space-2xl);
+}
+
+.compass-row {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-lg);
+}
+
+.compass-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    flex: 1;
+    max-width: 160px;
+}
+
+.compass-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-secondary);
+}
+
+.compass {
+    width: 100px;
+    height: 100px;
+}
+
+.compass-ring {
+    fill: none;
+    stroke: var(--border-emphasis);
+    stroke-width: 1.5;
+}
+
+.compass-cardinal {
+    fill: var(--ink-muted);
+    font-size: 10px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    font-family: var(--font);
+}
+
+.compass-tick {
+    stroke: var(--ink-muted);
+    stroke-width: 1.5;
+}
+
+.compass-arrow line {
+    stroke: var(--champion);
+}
+
+.compass-arrow polygon {
+    fill: var(--champion);
+}
+
+.compass-arrow circle {
+    fill: var(--ink-muted);
+}
+
+[data-station="philippe"] .compass-arrow line,
+[data-station="philippe"] .compass-arrow polygon {
+    stroke: var(--philippe);
+    fill: var(--philippe);
+}
+
+[data-station="ken"] .compass-arrow line,
+[data-station="ken"] .compass-arrow polygon {
+    stroke: var(--ken);
+    fill: var(--ken);
+}
+
+[data-station="brian"] .compass-arrow line,
+[data-station="brian"] .compass-arrow polygon {
+    stroke: var(--brian);
+    fill: var(--brian);
+}
+
+[data-station="philippe"] .compass-arrow circle { fill: var(--philippe); }
+[data-station="ken"] .compass-arrow circle { fill: var(--ken); }
+[data-station="brian"] .compass-arrow circle { fill: var(--brian); }
+
+.compass-degrees {
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-secondary);
+}
+
+/* ===== Win Tally ===== */
+.tally-section {
+    margin-bottom: var(--space-xl);
+}
+
+.tally-row {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+}
+
+.tally-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-xl);
+    flex: 1;
+    max-width: 180px;
+    transition: all 0.25s ease;
+}
+
+.tally-card.top-winner {
+    border-color: var(--champion-border);
+    background: var(--champion-glow);
+}
+
+.tally-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-secondary);
+}
+
+.tally-count {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-primary);
+}
+
+.tally-card.top-winner .tally-count {
+    color: var(--champion);
+}
+
+.tally-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-muted);
+}
+
+[data-station="philippe"] .tally-name { color: var(--philippe); }
+[data-station="ken"] .tally-name { color: var(--ken); }
+[data-station="brian"] .tally-name { color: var(--brian); }
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+    .app {
+        padding: var(--space-md) var(--space-sm);
+    }
+
+    .metric-row {
+        flex-direction: column;
+        align-items: stretch;
+        padding: var(--space-md);
+        gap: var(--space-sm);
+    }
+
+    .metric-label {
+        min-width: unset;
+    }
+
+    .metric-values {
+        justify-content: space-between;
+    }
+
+    .metric-cell {
+        min-width: unset;
+        flex: 1;
+        padding: var(--space-sm);
+    }
+
+    .value {
+        font-size: 1rem;
+    }
+
+    .compass-card {
+        max-width: 120px;
+        padding: var(--space-sm);
+    }
+
+    .compass {
+        width: 80px;
+        height: 80px;
+    }
+
+    .tally-card {
+        padding: var(--space-md);
+    }
+
+    .tally-count {
+        font-size: 1.5rem;
+    }
+
+    .station-legend {
+        gap: var(--space-md);
+    }
 }

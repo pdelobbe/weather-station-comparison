@@ -1,18 +1,18 @@
 // Station slugs
 const stations = {
-  "Philippe": "216ccd7e9663b597d059694c2b68cd60",
-  "Ken": "e0e95053fed772de0e60444fc4ff88c8",
-  "Brian": "fbbe2845876465d1a954e5e49d757bfa"
+  Philippe: "216ccd7e9663b597d059694c2b68cd60",
+  Ken: "e0e95053fed772de0e60444fc4ff88c8",
+  Brian: "fbbe2845876465d1a954e5e49d757bfa",
 };
 
-// Weather components with keys and units
-const components = [
-  { name: "Temperature", key: "tempf", unit: "°F", decimals: 1 },
-  { name: "Wind Speed", key: "windspeedmph", unit: "mph", decimals: 1 },
-  { name: "Wind Gust", key: "windgustmph", unit: "mph", decimals: 1 },
-  { name: "Daily Rain", key: "dailyrainin", unit: "inches", decimals: 2 },
-  { name: "Event Rain", key: "eventrainin", unit: "inches", decimals: 2 },
-  { name: "Pressure", key: "baromrelin", unit: "inHg", decimals: 2 }
+// Metrics to compare — higher is "champion" unless noted
+const metrics = [
+  { key: "tempf", decimals: 1 },
+  { key: "windspeedmph", decimals: 1 },
+  { key: "maxdailygust", decimals: 1 },
+  { key: "dailyrainin", decimals: 2 },
+  { key: "eventrainin", decimals: 2 },
+  { key: "baromrelin", decimals: 2 },
 ];
 
 // Fetch weather data from Ambient Weather API
@@ -28,118 +28,151 @@ async function fetchWeatherData(slug) {
   }
 }
 
-// Determine leaderboard leader with tie handling
-function getLeader(stationValues, isMin, unit, decimals) {
-  if (stationValues.length === 0) return "No data";
-  const sorted = isMin
-    ? stationValues.sort((a, b) => a.value - b.value)
-    : stationValues.sort((a, b) => b.value - a.value);
-  const topValue = sorted[0].value;
-  const topStations = sorted.filter((s) => s.value === topValue);
-  if (topStations.length === 3) {
-    return `3-way tie (${topValue.toFixed(decimals)}${unit})`;
-  }
-  if (topStations.length === 2) {
-    return `${topStations[0].station} & ${topStations[1].station} (${topValue.toFixed(decimals)}${unit})`;
-  }
-  return `${sorted[0].station} (${topValue.toFixed(decimals)}${unit})`;
+// Fetch all stations in parallel
+async function fetchAllStations() {
+  const entries = Object.entries(stations);
+  const results = await Promise.all(
+    entries.map(([name, slug]) =>
+      fetchWeatherData(slug).then((data) => [name, data])
+    )
+  );
+  return Object.fromEntries(results);
 }
 
-// Update the UI with fetched data
-async function updateUI() {
-  const data = {};
-  for (const station in stations) {
-    data[station] = await fetchWeatherData(stations[station]);
-    console.log(`${station} data:`, data[station]);
+// Determine champion(s) (highest value) for a metric across stations
+function findChampions(data, key) {
+  let bestValue = -Infinity;
+  const values = [];
+
+  for (const station in data) {
+    if (!data[station] || data[station][key] === undefined) continue;
+    const val = data[station][key];
+    values.push({ station, value: val });
+    if (val > bestValue) bestValue = val;
   }
 
-  // Update station data
-  setTimeout(() => {
-    for (const station in data) {
-      const stationData = data[station];
-      if (stationData) {
-        const stationLower = station.toLowerCase();
-        components.forEach(comp => {
-          const elementId = `${stationLower}-${comp.key}`;
-          const element = document.getElementById(elementId);
-          if (element) {
-            const value = stationData[comp.key];
-            console.log(`Updating ${elementId} with value:`, value);
-            element.textContent = value !== undefined ? value.toFixed(comp.decimals) : "--";
-          } else {
-            console.error(`Element not found: ${elementId}`);
-          }
-        });
+  const winners = values.filter((v) => v.value === bestValue);
+  // All tied = no champion
+  if (winners.length === values.length) return { winners: [], values };
+  return { winners: winners.map((w) => w.station), values };
+}
 
-        if (stationData.winddir !== undefined) {
-          const arrow = document.getElementById(`arrow-${stationLower}`);
-          if (arrow) {
-            arrow.setAttribute("transform", `rotate(${stationData.winddir}, 50, 50)`);
-          } else {
-            console.error(`Arrow element not found for ${stationLower}`);
-          }
-        }
+// Find the station with the lowest daily rain (donut buyer)
+function findDonutLoser(data) {
+  let worst = null;
+  let worstValue = Infinity;
+  const values = [];
+
+  for (const station in data) {
+    if (!data[station] || data[station].dailyrainin === undefined) continue;
+    const val = data[station].dailyrainin;
+    values.push({ station, value: val });
+    if (val < worstValue) {
+      worstValue = val;
+      worst = station;
+    }
+  }
+
+  // Check for ties at the bottom
+  const tied = values.filter((v) => v.value === worstValue);
+  if (tied.length === values.length) return null; // all tied = no loser
+  if (tied.length > 1) return tied.map((t) => t.station); // multiple losers
+  return [worst];
+}
+
+// Update the entire UI
+async function updateUI() {
+  const data = await fetchAllStations();
+  const wins = { Philippe: 0, Ken: 0, Brian: 0 };
+
+  // Update each metric row
+  metrics.forEach((metric) => {
+    const result = findChampions(data, metric.key);
+
+    for (const station in data) {
+      const stationLower = station.toLowerCase();
+      const valueEl = document.getElementById(`${stationLower}-${metric.key}`);
+      const cellEl = valueEl?.closest(".metric-cell");
+
+      if (!valueEl || !cellEl) continue;
+
+      const stationData = data[station];
+      if (stationData && stationData[metric.key] !== undefined) {
+        valueEl.textContent = stationData[metric.key].toFixed(metric.decimals);
+      } else {
+        valueEl.textContent = "--";
+      }
+
+      // Champion highlighting — all tied winners get the crown
+      cellEl.classList.remove("champion", "donut-loser");
+      if (result.winners.includes(station)) {
+        cellEl.classList.add("champion");
+        wins[station]++;
       }
     }
+  });
 
-    // Update leaderboard after station data
-    components.forEach(comp => {
-      const minValues = [];
-      const currentValues = [];
-      const maxValues = [];
+  // Donut loser for daily rain
+  const donutLosers = findDonutLoser(data);
+  document.querySelectorAll(".donut-badge").forEach((el) => (el.innerHTML = ""));
 
-      for (const station in data) {
-        const stationData = data[station];
-        if (stationData) {
-          const currentValue = stationData[comp.key];
-          if (currentValue !== undefined) {
-            currentValues.push({ station, value: currentValue });
-          }
+  if (donutLosers) {
+    donutLosers.forEach((loser) => {
+      const loserLower = loser.toLowerCase();
+      const cell = document
+        .getElementById(`${loserLower}-dailyrainin`)
+        ?.closest(".metric-cell");
+      const badge = document.getElementById(`donut-${loserLower}-dailyrainin`);
 
-          const hlData = stationData.hl;
-          if (hlData && hlData[comp.key]) {
-            const useMaxForMin = ["windspeedmph", "windgustmph", "dailyrainin", "eventrainin"].includes(comp.key);
-            const minValue = useMaxForMin ? hlData[comp.key].h : hlData[comp.key].l;
-            const maxValue = hlData[comp.key].h;
-
-            console.log(`${station} ${comp.key} - Min Value (using ${useMaxForMin ? 'max' : 'low'}):`, minValue, "Max Value:", maxValue);
-
-            if (minValue !== undefined) minValues.push({ station, value: minValue });
-            if (maxValue !== undefined) maxValues.push({ station, value: maxValue });
-          } else {
-            console.log(`${station} - No hl data for ${comp.key}`);
-          }
-        }
+      if (cell) {
+        cell.classList.add("donut-loser");
+        cell.classList.remove("champion");
       }
-
-      const minElement = document.getElementById(`min-${comp.key}-leader`);
-      const currentElement = document.getElementById(`current-${comp.key}-leader`);
-      const maxElement = document.getElementById(`max-${comp.key}-leader`);
-
-      if (minElement) {
-        const minLeaderText = getLeader(minValues, true, comp.unit, comp.decimals);
-        minElement.textContent = minLeaderText;
-
-        // Add donut image for daily rain min leader
-        if (comp.key === "dailyrainin") {
-          const donutSpan = document.getElementById("min-dailyrainin-donut");
-          if (donutSpan) {
-            donutSpan.innerHTML = minLeaderText !== "No data"
-              ? '<img src="https://pngimg.com/uploads/donut/donut_PNG63.png" alt="Donut" style="width: 16px; height: 16px; margin-left: 5px; vertical-align: middle;">'
-              : '';
-          }
-        }
+      if (badge) {
+        badge.innerHTML = "🍩";
       }
-
-      if (currentElement) currentElement.textContent = getLeader(currentValues, false, comp.unit, comp.decimals);
-      if (maxElement) maxElement.textContent = getLeader(maxValues, false, comp.unit, comp.decimals);
     });
-  }, 200); // Increased delay to 200ms for Safari
+  }
 
-  document.getElementById("last-updated").textContent = `Last Updated: ${new Date().toLocaleString()}`;
+  // Wind direction compasses
+  for (const station in data) {
+    const stationLower = station.toLowerCase();
+    const stationData = data[station];
+
+    if (stationData && stationData.winddir !== undefined) {
+      const arrow = document.getElementById(`arrow-${stationLower}`);
+      if (arrow) {
+        arrow.setAttribute("transform", `rotate(${stationData.winddir}, 60, 60)`);
+      }
+      const degEl = document.getElementById(`${stationLower}-winddir`);
+      if (degEl) {
+        degEl.textContent = `${Math.round(stationData.winddir)}°`;
+      }
+    }
+  }
+
+  // Win tally
+  const maxWins = Math.max(...Object.values(wins));
+  for (const station in wins) {
+    const stationLower = station.toLowerCase();
+    const countEl = document.getElementById(`wins-${stationLower}`);
+    const cardEl = document.getElementById(`tally-${stationLower}`);
+
+    if (countEl) countEl.textContent = wins[station];
+    if (cardEl) {
+      cardEl.classList.toggle(
+        "top-winner",
+        wins[station] === maxWins && maxWins > 0
+      );
+    }
+  }
+
+  // Timestamp
+  document.getElementById("last-updated").textContent =
+    `Last updated: ${new Date().toLocaleString()}`;
 }
 
-// Run updateUI when DOM is fully loaded and every 10 seconds
+// Boot
 document.addEventListener("DOMContentLoaded", () => {
   updateUI();
   setInterval(updateUI, 10000);

@@ -10,7 +10,7 @@ const stations = {
 const metrics = [
   { key: "maxtemp", hlKey: "tempf", hlSide: "h", decimals: 1 },
   { key: "mintemp", hlKey: "tempf", hlSide: "l", decimals: 1, lowWins: true },
-  { key: "dewPoint", decimals: 1 },
+  { key: "dewpoint", computed: true, decimals: 1 },
   { key: "windspeedmph", decimals: 1 },
   { key: "maxdailygust", decimals: 1 },
   { key: "dailyrainin", decimals: 2 },
@@ -44,9 +44,24 @@ async function fetchAllStations() {
   return Object.fromEntries(results);
 }
 
-// Extract a metric value from station data (direct or from hl high/low)
+// Calculate dew point from temp (°F) and humidity (%) using Magnus formula
+function calcDewpoint(tempF, humidity) {
+  const tempC = (tempF - 32) * 5 / 9;
+  const a = 17.27, b = 237.7;
+  const alpha = (a * tempC) / (b + tempC) + Math.log(humidity / 100);
+  const dewC = (b * alpha) / (a - alpha);
+  return dewC * 9 / 5 + 32;
+}
+
+// Extract a metric value from station data (direct, hl, or computed)
 function getMetricValue(stationData, metric) {
   if (!stationData) return undefined;
+  if (metric.computed && metric.key === "dewpoint") {
+    if (stationData.tempf !== undefined && stationData.humidity !== undefined) {
+      return calcDewpoint(stationData.tempf, stationData.humidity);
+    }
+    return undefined;
+  }
   if (metric.hlKey) {
     return stationData.hl?.[metric.hlKey]?.[metric.hlSide];
   }

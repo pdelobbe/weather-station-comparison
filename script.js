@@ -10,6 +10,7 @@ const stations = {
 const metrics = [
   { key: "maxtemp", hlKey: "tempf", hlSide: "h", decimals: 1 },
   { key: "mintemp", hlKey: "tempf", hlSide: "l", decimals: 1, lowWins: true },
+  { key: "dewPoint", decimals: 1 },
   { key: "windspeedmph", decimals: 1 },
   { key: "maxdailygust", decimals: 1 },
   { key: "dailyrainin", decimals: 2 },
@@ -80,8 +81,8 @@ function findDonutLoser(data) {
   const values = [];
 
   for (const station in data) {
-    if (!data[station] || data[station].dailyrainin === undefined) continue;
-    const val = data[station].dailyrainin;
+    if (!data[station] || data[station].eventrainin === undefined) continue;
+    const val = data[station].eventrainin;
     values.push({ station, value: val });
     if (val < worstValue) {
       worstValue = val;
@@ -200,9 +201,9 @@ async function updateUI() {
     donutLosers.forEach((loser) => {
       const loserLower = loser.toLowerCase();
       const cell = document
-        .getElementById(`${loserLower}-dailyrainin`)
+        .getElementById(`${loserLower}-eventrainin`)
         ?.closest(".metric-cell");
-      const badge = document.getElementById(`donut-${loserLower}-dailyrainin`);
+      const badge = document.getElementById(`donut-${loserLower}-eventrainin`);
 
       if (cell) {
         cell.classList.add("donut-loser");

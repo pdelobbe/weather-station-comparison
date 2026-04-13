@@ -415,7 +415,7 @@ async function shareMetric(metricKey, btn) {
     const file = new File([blob], "share.png", { type: "image/png" });
 
     if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file] });
+      await navigator.share({ files: [file], text: " " });
     } else {
       fallbackDownload(blob, metricKey);
     }

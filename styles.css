@@ -276,47 +276,6 @@ body {
     pointer-events: none;
 }
 
-/* ===== Share Overlay ===== */
-.share-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0.92);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    padding: 24px;
-}
-
-.share-overlay-img {
-    max-width: 90%;
-    max-height: 60vh;
-    border-radius: 12px;
-    -webkit-touch-callout: default;
-}
-
-.share-overlay-hint {
-    color: #8b949e;
-    font-family: var(--font);
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.share-overlay-close {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    background: none;
-    border: none;
-    color: #8b949e;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 8px;
-    line-height: 1;
-    -webkit-tap-highlight-color: transparent;
-}
 
 /* ===== Compass Section ===== */
 .compass-section {

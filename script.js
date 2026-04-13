@@ -302,7 +302,11 @@ function renderShareCard(metricKey) {
     ctx.strokeStyle = "rgba(240,246,252,0.12)";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.roundRect(1, 1, SHARE_W - 2, SHARE_H - 2, 12);
+    if (ctx.roundRect) {
+      ctx.roundRect(1, 1, SHARE_W - 2, SHARE_H - 2, 12);
+    } else {
+      ctx.rect(1, 1, SHARE_W - 2, SHARE_H - 2);
+    }
     ctx.stroke();
 
     // Metric title
@@ -388,11 +392,34 @@ async function shareMetric(metricKey, btn) {
     const blob = await renderShareCard(metricKey);
     const file = new File([blob], "weather.png", { type: "image/png" });
 
-    await navigator.share({ files: [file] });
-  } catch (err) {
-    if (err.name !== "AbortError") {
-      console.error("Share failed:", err);
+    if (navigator.share) {
+      try {
+        await navigator.share({ files: [file] });
+        return;
+      } catch (e) {
+        if (e.name === "AbortError") return;
+        // files not supported — try without
+        try {
+          await navigator.share({
+            title: METRIC_DISPLAY[metricKey].title,
+            url: location.href,
+          });
+          return;
+        } catch (e2) {
+          if (e2.name === "AbortError") return;
+        }
+      }
     }
+
+    // Fallback: download
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "weather.png";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch (err) {
+    console.error("Share failed:", err);
   } finally {
     btn.disabled = false;
   }

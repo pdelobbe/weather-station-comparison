@@ -377,7 +377,11 @@ function renderShareCard(metricKey) {
 
     drawSep(195);
 
-    canvas.toBlob((blob) => resolve(blob), "image/png");
+    if (canvas.convertToBlob) {
+      resolve(await canvas.convertToBlob({ type: "image/png" }));
+    } else {
+      canvas.toBlob((blob) => resolve(blob), "image/png");
+    }
   });
 }
 
@@ -395,11 +399,13 @@ async function shareMetric(metricKey, btn) {
 
   try {
     const blob = await renderShareCard(metricKey);
-    const title = METRIC_DISPLAY[metricKey].title;
-    const file = new File([blob], `weather-${metricKey}.png`, { type: "image/png" });
+    const file = new File([blob], `weather-${metricKey}.png`, {
+      type: "image/png",
+      lastModified: Date.now(),
+    });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], title });
+      await navigator.share({ files: [file] });
     } else {
       fallbackDownload(blob, metricKey);
     }

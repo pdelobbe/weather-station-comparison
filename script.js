@@ -413,10 +413,7 @@ async function shareMetric(metricKey, btn) {
     const file = new File([blob], "weather.png", { type: "image/png" });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        files: [file],
-        title: METRIC_DISPLAY[metricKey].title,
-      });
+      await navigator.share({ files: [file] });
     } else {
       fallbackDownload(blob, metricKey);
     }
@@ -436,9 +433,8 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(updateUI, REFRESH_INTERVAL * 1000);
   initPullToRefresh();
 
-  document.querySelector(".metrics").addEventListener("click", (e) => {
-    const btn = e.target.closest(".share-arrow");
-    if (btn) shareMetric(btn.dataset.metric, btn);
+  document.querySelectorAll(".share-arrow").forEach((btn) => {
+    btn.addEventListener("click", () => shareMetric(btn.dataset.metric, btn));
   });
 
   // Refresh immediately when app returns from background

@@ -283,105 +283,116 @@ const METRIC_DISPLAY = {
   baromrelin:   { title: "Barometric Pressure", unit: "inHg" },
 };
 
-function renderShareCard(metricKey) {
-  return new Promise(async (resolve) => {
-    await document.fonts.ready;
+async function renderShareCard(metricKey) {
+  await document.fonts.ready;
 
-    const display = METRIC_DISPLAY[metricKey];
-    const canvas = document.createElement("canvas");
-    canvas.width = SHARE_W * SHARE_SCALE;
-    canvas.height = SHARE_H * SHARE_SCALE;
-    const ctx = canvas.getContext("2d");
-    ctx.scale(SHARE_SCALE, SHARE_SCALE);
+  const display = METRIC_DISPLAY[metricKey];
+  const canvas = document.createElement("canvas");
+  canvas.width = SHARE_W * SHARE_SCALE;
+  canvas.height = SHARE_H * SHARE_SCALE;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(SHARE_SCALE, SHARE_SCALE);
 
-    // Background
-    ctx.fillStyle = "#0d1117";
-    ctx.fillRect(0, 0, SHARE_W, SHARE_H);
-
-    // Border
-    ctx.strokeStyle = "rgba(240,246,252,0.12)";
-    ctx.lineWidth = 2;
+  // Rounded rect helper (polyfill for older iOS)
+  function roundedRect(x, y, w, h, r) {
     ctx.beginPath();
-    ctx.roundRect(1, 1, SHARE_W - 2, SHARE_H - 2, 12);
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+  }
+
+  // Background
+  ctx.fillStyle = "#0d1117";
+  ctx.fillRect(0, 0, SHARE_W, SHARE_H);
+
+  // Border
+  ctx.strokeStyle = "rgba(240,246,252,0.12)";
+  ctx.lineWidth = 2;
+  roundedRect(1, 1, SHARE_W - 2, SHARE_H - 2, 12);
+  ctx.stroke();
+
+  // Metric title
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#e6edf3";
+  ctx.font = "800 24px Inter, sans-serif";
+  ctx.fillText(display.title, SHARE_W / 2, 44);
+
+  // Subtitle
+  ctx.fillStyle = "#8b949e";
+  ctx.font = "500 13px Inter, sans-serif";
+  ctx.fillText("Weather Station Showdown", SHARE_W / 2, 68);
+
+  // Date & time in Central Time
+  const now = new Date();
+  const dateTime = now.toLocaleString("en-US", {
+    timeZone: "America/Chicago",
+    year: "numeric", month: "long", day: "numeric",
+    hour: "numeric", minute: "2-digit", hour12: true,
+  });
+  ctx.fillStyle = "#484f58";
+  ctx.font = "500 12px Inter, sans-serif";
+  ctx.fillText(dateTime + " CT", SHARE_W / 2, 88);
+
+  // Separator
+  function drawSep(y) {
+    ctx.strokeStyle = "rgba(240,246,252,0.08)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(40, y);
+    ctx.lineTo(SHARE_W - 40, y);
     ctx.stroke();
+  }
 
-    // Metric title
-    ctx.textAlign = "center";
-    ctx.fillStyle = "#e6edf3";
-    ctx.font = "800 24px Inter, sans-serif";
-    ctx.fillText(display.title, SHARE_W / 2, 44);
+  drawSep(102);
 
-    // Subtitle
-    ctx.fillStyle = "#8b949e";
-    ctx.font = "500 13px Inter, sans-serif";
-    ctx.fillText("Weather Station Showdown", SHARE_W / 2, 68);
+  // Read values from DOM
+  const entries = STATION_NAMES.map((name) => {
+    const lower = name.toLowerCase();
+    const valEl = document.getElementById(`${lower}-${metricKey}`);
+    const cell = valEl?.closest(".metric-cell");
+    return {
+      name,
+      value: valEl?.textContent || "--",
+      isChampion: cell?.classList.contains("champion") || false,
+      isDonutLoser: cell?.classList.contains("donut-loser") || false,
+    };
+  });
 
-    // Date & time in Central Time
-    const now = new Date();
-    const dateTime = now.toLocaleString("en-US", {
-      timeZone: "America/Chicago",
-      year: "numeric", month: "long", day: "numeric",
-      hour: "numeric", minute: "2-digit", hour12: true,
-    });
-    ctx.fillStyle = "#484f58";
-    ctx.font = "500 12px Inter, sans-serif";
-    ctx.fillText(dateTime + " CT", SHARE_W / 2, 88);
+  // Station names
+  const colX = [150, 300, 450];
+  STATION_NAMES.forEach((name, i) => {
+    ctx.fillStyle = STATION_COLORS[name.toLowerCase()];
+    ctx.font = "700 14px Inter, sans-serif";
+    ctx.fillText(name, colX[i], 132);
+  });
 
-    // Separator
-    function drawSep(y) {
-      ctx.strokeStyle = "rgba(240,246,252,0.08)";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(40, y);
-      ctx.lineTo(SHARE_W - 40, y);
-      ctx.stroke();
-    }
-
-    drawSep(102);
-
-    // Read values from DOM
-    const entries = STATION_NAMES.map((name) => {
-      const lower = name.toLowerCase();
-      const valEl = document.getElementById(`${lower}-${metricKey}`);
-      const cell = valEl?.closest(".metric-cell");
-      return {
-        name,
-        value: valEl?.textContent || "--",
-        isChampion: cell?.classList.contains("champion") || false,
-        isDonutLoser: cell?.classList.contains("donut-loser") || false,
-      };
-    });
-
-    // Station names
-    const colX = [150, 300, 450];
-    STATION_NAMES.forEach((name, i) => {
-      ctx.fillStyle = STATION_COLORS[name.toLowerCase()];
-      ctx.font = "700 14px Inter, sans-serif";
-      ctx.fillText(name, colX[i], 132);
-    });
-
-    // Values
-    entries.forEach((entry, i) => {
-      if (entry.isDonutLoser) {
-        ctx.fillStyle = "#dc5050";
-      } else if (entry.isChampion) {
-        ctx.fillStyle = "#f0b429";
-      } else {
-        ctx.fillStyle = "#e6edf3";
-      }
-      ctx.font = "700 22px Inter, sans-serif";
-      let valText = `${entry.value} ${display.unit}`;
-      if (entry.isDonutLoser) valText += " \u{1F369}";
-      ctx.fillText(valText, colX[i], 168);
-    });
-
-    drawSep(195);
-
-    if (canvas.convertToBlob) {
-      resolve(await canvas.convertToBlob({ type: "image/png" }));
+  // Values
+  entries.forEach((entry, i) => {
+    if (entry.isDonutLoser) {
+      ctx.fillStyle = "#dc5050";
+    } else if (entry.isChampion) {
+      ctx.fillStyle = "#f0b429";
     } else {
-      canvas.toBlob((blob) => resolve(blob), "image/png");
+      ctx.fillStyle = "#e6edf3";
     }
+    ctx.font = "700 22px Inter, sans-serif";
+    let valText = `${entry.value} ${display.unit}`;
+    if (entry.isDonutLoser) valText += " \u{1F369}";
+    ctx.fillText(valText, colX[i], 168);
+  });
+
+  drawSep(195);
+
+  // Convert to blob
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), "image/png");
   });
 }
 

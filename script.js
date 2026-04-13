@@ -390,17 +390,17 @@ async function renderShareCard(metricKey) {
 
   drawSep(195);
 
-  // Convert to blob
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob), "image/png");
-  });
+  // Convert to JPEG blob via data URL (most reliable for iOS Messages)
+  const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+  const res = await fetch(dataUrl);
+  return await res.blob();
 }
 
 function fallbackDownload(blob, metricKey) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `weather-${metricKey}.png`;
+  a.download = `weather-${metricKey}.jpg`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
@@ -410,8 +410,8 @@ async function shareMetric(metricKey, btn) {
 
   try {
     const blob = await renderShareCard(metricKey);
-    const file = new File([blob], `weather-${metricKey}.png`, {
-      type: "image/png",
+    const file = new File([blob], `weather.jpg`, {
+      type: "image/jpeg",
       lastModified: Date.now(),
     });
 

@@ -242,42 +242,28 @@ body {
     display: inline;
 }
 
-/* ===== Share Button ===== */
-.share-row {
-    display: flex;
-    justify-content: center;
-    padding: 6px 16px 2px;
-}
-
-.share-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--surface-raised);
-    border: 1px solid var(--border-emphasis);
-    border-radius: var(--radius-md);
-    color: var(--ink-secondary);
-    font-family: var(--font);
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 6px 16px;
+/* ===== Share Arrow ===== */
+.share-arrow {
+    background: none;
+    border: none;
+    color: var(--ink-muted);
+    font-size: 0.8rem;
+    padding: 4px 2px 4px 6px;
     cursor: pointer;
-    transition: all 0.15s ease;
+    flex-shrink: 0;
+    transition: color 0.15s ease, transform 0.15s ease;
     -webkit-tap-highlight-color: transparent;
+    line-height: 1;
 }
 
-.share-btn:active {
-    background: var(--surface-hover);
-    transform: scale(0.97);
+.share-arrow:active {
+    color: var(--ink-primary);
+    transform: scale(1.15);
 }
 
-.share-btn:disabled {
-    opacity: 0.5;
+.share-arrow:disabled {
+    opacity: 0.3;
     pointer-events: none;
-}
-
-.share-icon {
-    font-size: 0.85rem;
 }
 
 /* ===== Compass Section ===== */
@@ -539,12 +525,8 @@ body {
         gap: 8px;
     }
 
-    .share-row {
-        padding: 4px 10px 2px;
-    }
-
-    .share-btn {
-        font-size: 0.65rem;
-        padding: 5px 12px;
+    .share-arrow {
+        font-size: 0.7rem;
+        padding: 3px 1px 3px 4px;
     }
 }

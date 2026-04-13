@@ -398,32 +398,41 @@ async function renderShareCard(metricKey) {
   return new Blob([bytes], { type: "image/png" });
 }
 
-function fallbackDownload(blob, metricKey) {
+function showShareOverlay(blob) {
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `weather-${metricKey}.png`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
+
+  const overlay = document.createElement("div");
+  overlay.className = "share-overlay";
+
+  const img = document.createElement("img");
+  img.src = url;
+  img.className = "share-overlay-img";
+
+  const hint = document.createElement("div");
+  hint.className = "share-overlay-hint";
+  hint.textContent = "Long press image to share";
+
+  const close = document.createElement("button");
+  close.className = "share-overlay-close";
+  close.textContent = "\u2715";
+  close.addEventListener("click", () => {
+    overlay.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  overlay.appendChild(close);
+  overlay.appendChild(img);
+  overlay.appendChild(hint);
+  document.body.appendChild(overlay);
 }
 
 async function shareMetric(metricKey, btn) {
   btn.disabled = true;
-
   try {
     const blob = await renderShareCard(metricKey);
-    const file = new File([blob], "share.png", { type: "image/png" });
-
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file], text: " " });
-    } else {
-      fallbackDownload(blob, metricKey);
-    }
+    showShareOverlay(blob);
   } catch (err) {
-    if (err.name !== "AbortError") {
-      console.error("Share failed:", err);
-      fallbackDownload(blob, metricKey);
-    }
+    console.error("Share failed:", err);
   } finally {
     btn.disabled = false;
   }

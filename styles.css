@@ -243,17 +243,27 @@ body {
 }
 
 /* ===== Share Arrow ===== */
+.share-arrow,
+.share-arrow-spacer {
+    width: 22px;
+    flex-shrink: 0;
+}
+
 .share-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
     color: var(--ink-muted);
-    font-size: 0.8rem;
-    padding: 4px 2px 4px 6px;
+    padding: 0;
     cursor: pointer;
-    flex-shrink: 0;
     transition: color 0.15s ease, transform 0.15s ease;
     -webkit-tap-highlight-color: transparent;
-    line-height: 1;
+}
+
+.share-arrow svg {
+    display: block;
 }
 
 .share-arrow:active {
@@ -471,7 +481,6 @@ body {
     }
 
     .compass-card {
-        max-width: 110px;
         padding: 6px;
     }
 
@@ -525,8 +534,13 @@ body {
         gap: 8px;
     }
 
-    .share-arrow {
-        font-size: 0.7rem;
-        padding: 3px 1px 3px 4px;
+    .share-arrow,
+    .share-arrow-spacer {
+        width: 18px;
+    }
+
+    .share-arrow svg {
+        width: 12px;
+        height: 12px;
     }
 }

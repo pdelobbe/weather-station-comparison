@@ -267,11 +267,170 @@ async function updateUI() {
   startCountdown();
 }
 
+// --- Share Donut Watch ---
+const SHARE_W = 600, SHARE_H = 310, SHARE_SCALE = 1.5;
+const STATION_COLORS = { philippe: "#58a6ff", ken: "#7ee787", brian: "#d2a8ff" };
+const STATION_NAMES = ["Philippe", "Ken", "Brian"];
+
+function renderShareCard() {
+  return new Promise(async (resolve) => {
+    await document.fonts.ready;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = SHARE_W * SHARE_SCALE;
+    canvas.height = SHARE_H * SHARE_SCALE;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(SHARE_SCALE, SHARE_SCALE);
+
+    // Background
+    ctx.fillStyle = "#0d1117";
+    ctx.fillRect(0, 0, SHARE_W, SHARE_H);
+
+    // Border
+    ctx.strokeStyle = "rgba(240,246,252,0.12)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(1, 1, SHARE_W - 2, SHARE_H - 2, 12);
+    ctx.stroke();
+
+    // Title
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#e6edf3";
+    ctx.font = "800 26px Inter, sans-serif";
+    ctx.fillText("DONUT WATCH", SHARE_W / 2, 48);
+
+    ctx.fillStyle = "#8b949e";
+    ctx.font = "500 13px Inter, sans-serif";
+    ctx.fillText("Weather Station Showdown", SHARE_W / 2, 70);
+
+    const today = new Date().toLocaleDateString("en-US", {
+      year: "numeric", month: "long", day: "numeric"
+    });
+    ctx.fillStyle = "#484f58";
+    ctx.font = "500 12px Inter, sans-serif";
+    ctx.fillText(today, SHARE_W / 2, 90);
+
+    // Separator
+    function drawSep(y) {
+      ctx.strokeStyle = "rgba(240,246,252,0.08)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, y);
+      ctx.lineTo(SHARE_W - 40, y);
+      ctx.stroke();
+    }
+
+    drawSep(105);
+
+    // Read values from DOM
+    function readMetric(key) {
+      return STATION_NAMES.map((name) => {
+        const lower = name.toLowerCase();
+        const valEl = document.getElementById(`${lower}-${key}`);
+        const cell = valEl?.closest(".metric-cell");
+        return {
+          name,
+          value: valEl?.textContent || "--",
+          isChampion: cell?.classList.contains("champion") || false,
+          isDonutLoser: cell?.classList.contains("donut-loser") || false,
+        };
+      });
+    }
+
+    const eventRain = readMetric("eventrainin");
+    const dailyRain = readMetric("dailyrainin");
+
+    // Draw a metric section
+    const colX = [150, 300, 450]; // center x for each station column
+
+    function drawMetricSection(label, icon, entries, y) {
+      // Label
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#8b949e";
+      ctx.font = "600 13px Inter, sans-serif";
+      ctx.fillText(`${icon}  ${label}`, SHARE_W / 2, y);
+
+      // Station names
+      STATION_NAMES.forEach((name, i) => {
+        ctx.fillStyle = STATION_COLORS[name.toLowerCase()];
+        ctx.font = "700 12px Inter, sans-serif";
+        ctx.fillText(name, colX[i], y + 24);
+      });
+
+      // Values
+      entries.forEach((entry, i) => {
+        if (entry.isDonutLoser) {
+          ctx.fillStyle = "#dc5050";
+        } else if (entry.isChampion) {
+          ctx.fillStyle = "#f0b429";
+        } else {
+          ctx.fillStyle = "#e6edf3";
+        }
+        ctx.font = "700 18px Inter, sans-serif";
+        const display = entry.isDonutLoser
+          ? `${entry.value} in \u{1F369}`
+          : `${entry.value} in`;
+        ctx.fillText(display, colX[i], y + 50);
+      });
+    }
+
+    drawMetricSection("Event Rain", "\u26C8", eventRain, 130);
+    drawSep(195);
+    drawMetricSection("Daily Rain", "\u{1F327}", dailyRain, 220);
+    drawSep(285);
+
+    canvas.toBlob((blob) => resolve(blob), "image/png");
+  });
+}
+
+function fallbackDownload(blob) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "donut-watch.png";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+async function shareDonutWatch() {
+  const btn = document.getElementById("share-donut-btn");
+  btn.disabled = true;
+
+  try {
+    const blob = await renderShareCard();
+    const file = new File([blob], "donut-watch.png", { type: "image/png" });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        files: [file],
+        title: "Donut Watch",
+        text: "\u{1F369} Who's buying donuts?",
+      });
+    } else {
+      fallbackDownload(blob);
+    }
+  } catch (err) {
+    if (err.name !== "AbortError") {
+      console.error("Share failed:", err);
+      // Still try download as last resort
+      try {
+        const blob = await renderShareCard();
+        fallbackDownload(blob);
+      } catch (_) {}
+    }
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 // Boot
 document.addEventListener("DOMContentLoaded", () => {
   updateUI();
   setInterval(updateUI, REFRESH_INTERVAL * 1000);
   initPullToRefresh();
+
+  document.getElementById("share-donut-btn")
+    .addEventListener("click", shareDonutWatch);
 
   // Refresh immediately when app returns from background
   document.addEventListener("visibilitychange", () => {

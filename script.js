@@ -381,13 +381,17 @@ function renderShareCard(metricKey) {
   });
 }
 
-function fallbackDownload(blob) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "weather-share.png";
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 5000);
+function showToast(message) {
+  let toast = document.getElementById("share-toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "share-toast";
+    toast.className = "share-toast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2000);
 }
 
 async function shareMetric(metricKey, btn) {
@@ -395,25 +399,24 @@ async function shareMetric(metricKey, btn) {
 
   try {
     const blob = await renderShareCard(metricKey);
-    const file = new File([blob], "donut-watch.png", { type: "image/png" });
 
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        files: [file],
-        title: "Donut Watch",
-        text: "\u{1F369}",
-      });
-    } else {
-      fallbackDownload(blob);
+    try {
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": blob }),
+      ]);
+      showToast("Copied! Paste in Messages");
+    } catch (_) {
+      // Clipboard failed — fall back to download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "weather-share.png";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      showToast("Image saved");
     }
   } catch (err) {
-    if (err.name !== "AbortError") {
-      console.error("Share failed:", err);
-      try {
-        const blob = await renderShareCard(metricKey);
-        fallbackDownload(blob);
-      } catch (_) {}
-    }
+    console.error("Share failed:", err);
   } finally {
     btn.disabled = false;
   }

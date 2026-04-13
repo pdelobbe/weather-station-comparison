@@ -381,42 +381,18 @@ function renderShareCard(metricKey) {
   });
 }
 
-function showToast(message) {
-  let toast = document.getElementById("share-toast");
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "share-toast";
-    toast.className = "share-toast";
-    document.body.appendChild(toast);
-  }
-  toast.textContent = message;
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2000);
-}
-
 async function shareMetric(metricKey, btn) {
   btn.disabled = true;
 
   try {
     const blob = await renderShareCard(metricKey);
+    const file = new File([blob], "weather.png", { type: "image/png" });
 
-    try {
-      await navigator.clipboard.write([
-        new ClipboardItem({ "image/png": blob }),
-      ]);
-      showToast("Copied! Paste in Messages");
-    } catch (_) {
-      // Clipboard failed — fall back to download
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "weather-share.png";
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-      showToast("Image saved");
-    }
+    await navigator.share({ files: [file] });
   } catch (err) {
-    console.error("Share failed:", err);
+    if (err.name !== "AbortError") {
+      console.error("Share failed:", err);
+    }
   } finally {
     btn.disabled = false;
   }

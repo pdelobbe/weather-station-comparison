@@ -276,30 +276,6 @@ body {
     pointer-events: none;
 }
 
-/* ===== Share Toast ===== */
-.share-toast {
-    position: fixed;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--surface-raised);
-    border: 1px solid var(--border-emphasis);
-    color: var(--ink-primary);
-    font-family: var(--font);
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: var(--radius-md);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 9999;
-}
-
-.share-toast.show {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
 
 
 /* ===== Compass Section ===== */

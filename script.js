@@ -390,17 +390,17 @@ async function renderShareCard(metricKey) {
 
   drawSep(195);
 
-  // Convert to JPEG blob via data URL (most reliable for iOS Messages)
-  const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
-  const res = await fetch(dataUrl);
-  return await res.blob();
+  // Convert to PNG blob — same approach as original working version
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), "image/png");
+  });
 }
 
 function fallbackDownload(blob, metricKey) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `weather-${metricKey}.jpg`;
+  a.download = `weather-${metricKey}.png`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 5000);
 }
@@ -410,23 +410,20 @@ async function shareMetric(metricKey, btn) {
 
   try {
     const blob = await renderShareCard(metricKey);
-    const file = new File([blob], `weather.jpg`, {
-      type: "image/jpeg",
-      lastModified: Date.now(),
-    });
+    const file = new File([blob], "weather.png", { type: "image/png" });
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({ files: [file] });
+      await navigator.share({
+        files: [file],
+        title: METRIC_DISPLAY[metricKey].title,
+      });
     } else {
       fallbackDownload(blob, metricKey);
     }
   } catch (err) {
     if (err.name !== "AbortError") {
       console.error("Share failed:", err);
-      try {
-        const blob = await renderShareCard(metricKey);
-        fallbackDownload(blob, metricKey);
-      } catch (_) {}
+      fallbackDownload(blob, metricKey);
     }
   } finally {
     btn.disabled = false;

@@ -390,34 +390,30 @@ async function shareMetric(metricKey, btn) {
 
   try {
     const blob = await renderShareCard(metricKey);
-    const file = new File([blob], "weather.png", { type: "image/png" });
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ files: [file] });
-        return;
-      } catch (e) {
-        if (e.name === "AbortError") return;
-        // files not supported — try without
-        try {
-          await navigator.share({
-            title: METRIC_DISPLAY[metricKey].title,
-            url: location.href,
-          });
-          return;
-        } catch (e2) {
-          if (e2.name === "AbortError") return;
-        }
-      }
+    if (!blob) {
+      console.error("Share: canvas produced no blob");
+      return;
     }
 
-    // Fallback: download
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "weather.png";
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    const file = new File([blob], "weather.png", { type: "image/png" });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file] });
+      } catch (e) {
+        if (e.name !== "AbortError") {
+          console.error("Share failed:", e);
+        }
+      }
+    } else {
+      // Browser doesn't support file sharing — download instead
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "weather.png";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
   } catch (err) {
     console.error("Share failed:", err);
   } finally {

@@ -390,10 +390,12 @@ async function renderShareCard(metricKey) {
 
   drawSep(195);
 
-  // Convert to PNG blob — same approach as original working version
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => resolve(blob), "image/png");
-  });
+  // Build blob from ArrayBuffer (more compatible with iOS share)
+  const dataUrl = canvas.toDataURL("image/png");
+  const bstr = atob(dataUrl.split(",")[1]);
+  const bytes = new Uint8Array(bstr.length);
+  for (let i = 0; i < bstr.length; i++) bytes[i] = bstr.charCodeAt(i);
+  return new Blob([bytes], { type: "image/png" });
 }
 
 function fallbackDownload(blob, metricKey) {
@@ -410,9 +412,9 @@ async function shareMetric(metricKey, btn) {
 
   try {
     const blob = await renderShareCard(metricKey);
-    const file = new File([blob], "weather.png", { type: "image/png" });
+    const file = new File([blob], "share.png", { type: "image/png" });
 
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file] });
     } else {
       fallbackDownload(blob, metricKey);

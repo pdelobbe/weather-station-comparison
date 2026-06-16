@@ -3,6 +3,7 @@ const stations = {
   Philippe: "216ccd7e9663b597d059694c2b68cd60",
   Ken: "e0e95053fed772de0e60444fc4ff88c8",
   Brian: "fbbe2845876465d1a954e5e49d757bfa",
+  Kevin: "f91996276f039ca2374c1c6e60a3e227",
 };
 
 // Metrics to compare
@@ -10,6 +11,8 @@ const stations = {
 const metrics = [
   { key: "maxtemp", hlKey: "tempf", hlSide: "h", decimals: 1 },
   { key: "mintemp", hlKey: "tempf", hlSide: "l", decimals: 1, lowWins: true },
+  { key: "maxfeels", hlKey: "feelsLike", hlSide: "h", decimals: 1 },
+  { key: "minfeels", hlKey: "feelsLike", hlSide: "l", decimals: 1, lowWins: true },
   { key: "dewpoint", computed: true, decimals: 1 },
   { key: "windspeedmph", decimals: 1 },
   { key: "maxdailygust", decimals: 1 },
@@ -179,7 +182,7 @@ function initPullToRefresh() {
 // Update the entire UI
 async function updateUI() {
   const data = await fetchAllStations();
-  const wins = { Philippe: 0, Ken: 0, Brian: 0 };
+  const wins = Object.fromEntries(Object.keys(stations).map((s) => [s, 0]));
 
   // Update each metric row
   metrics.forEach((metric) => {
@@ -268,13 +271,15 @@ async function updateUI() {
 }
 
 // --- Share Metric ---
-const SHARE_W = 600, SHARE_H = 240, SHARE_SCALE = 1.5;
-const STATION_COLORS = { philippe: "#58a6ff", ken: "#7ee787", brian: "#d2a8ff" };
-const STATION_NAMES = ["Philippe", "Ken", "Brian"];
+const SHARE_W = 760, SHARE_H = 240, SHARE_SCALE = 1.5;
+const STATION_COLORS = { philippe: "#58a6ff", ken: "#7ee787", brian: "#d2a8ff", kevin: "#ff7eb6" };
+const STATION_NAMES = ["Philippe", "Ken", "Brian", "Kevin"];
 
 const METRIC_DISPLAY = {
   maxtemp:      { title: "Max Temperature",    unit: "\u00B0F" },
   mintemp:      { title: "Min Temperature",     unit: "\u00B0F" },
+  maxfeels:     { title: "Max Feels Like",      unit: "\u00B0F" },
+  minfeels:     { title: "Min Feels Like",      unit: "\u00B0F" },
   dewpoint:     { title: "Current Dew Point",   unit: "\u00B0F" },
   windspeedmph: { title: "Wind Speed",          unit: "mph" },
   maxdailygust: { title: "Max Wind Gust",       unit: "mph" },
@@ -356,8 +361,10 @@ function renderShareCard(metricKey) {
       };
     });
 
-    // Station names
-    const colX = [150, 300, 450];
+    // Station names — column centers computed from station count
+    const colMargin = 40;
+    const colSpan = (SHARE_W - colMargin * 2) / STATION_NAMES.length;
+    const colX = STATION_NAMES.map((_, i) => colMargin + colSpan * (i + 0.5));
     STATION_NAMES.forEach((name, i) => {
       ctx.fillStyle = STATION_COLORS[name.toLowerCase()];
       ctx.font = "700 14px Inter, sans-serif";

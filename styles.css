@@ -28,6 +28,7 @@
     --philippe: #58a6ff;
     --ken: #7ee787;
     --brian: #d2a8ff;
+    --kevin: #ff7eb6;
 
     /* Radius */
     --radius-sm: 5px;
@@ -150,6 +151,7 @@ body {
 .column-name.philippe { color: var(--philippe); }
 .column-name.ken { color: var(--ken); }
 .column-name.brian { color: var(--brian); }
+.column-name.kevin { color: var(--kevin); }
 
 .metric-row:nth-child(2) {
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
@@ -361,9 +363,16 @@ body {
     fill: var(--brian);
 }
 
+[data-station="kevin"] .compass-arrow line,
+[data-station="kevin"] .compass-arrow polygon {
+    stroke: var(--kevin);
+    fill: var(--kevin);
+}
+
 [data-station="philippe"] .compass-arrow circle { fill: var(--philippe); }
 [data-station="ken"] .compass-arrow circle { fill: var(--ken); }
 [data-station="brian"] .compass-arrow circle { fill: var(--brian); }
+[data-station="kevin"] .compass-arrow circle { fill: var(--kevin); }
 
 .compass-degrees {
     font-size: 0.7rem;
@@ -429,6 +438,7 @@ body {
 [data-station="philippe"] .tally-name { color: var(--philippe); }
 [data-station="ken"] .tally-name { color: var(--ken); }
 [data-station="brian"] .tally-name { color: var(--brian); }
+[data-station="kevin"] .tally-name { color: var(--kevin); }
 
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
@@ -453,29 +463,34 @@ body {
     }
 
     .metric-label {
-        min-width: 90px;
-        gap: 4px;
+        min-width: 72px;
+        gap: 3px;
     }
 
     .metric-icon {
-        font-size: 0.75rem;
-        width: 16px;
+        font-size: 0.7rem;
+        width: 14px;
     }
 
     .metric-name {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
     }
 
     .column-name {
-        font-size: 0.65rem;
+        font-size: 0.6rem;
+    }
+
+    .metric-values {
+        gap: 4px;
     }
 
     .metric-cell {
-        padding: 4px 6px;
+        padding: 4px 3px;
+        gap: 2px;
     }
 
     .value {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
 
     .unit {
@@ -483,12 +498,12 @@ body {
     }
 
     .compass-card {
-        padding: 6px;
+        padding: 5px 3px;
     }
 
     .compass {
-        width: 64px;
-        height: 64px;
+        width: 56px;
+        height: 56px;
     }
 
     .compass-label {
@@ -500,7 +515,7 @@ body {
     }
 
     .tally-card {
-        padding: 6px 12px;
+        padding: 6px 4px;
     }
 
     .tally-count {
